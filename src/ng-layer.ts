@@ -11,21 +11,12 @@ import {
 	ViewChild
 } from '@angular/core'
 
-export class TranAnimation {
-	in:{
-		name:"",
-		selector:"",
-		duration:""
-	};
-	
-	out:{
-		name:"",
-		selector:"",
-		duration:""
-	};
+export class LayerState {
+	inSelector:string;
+	outSelector:string;
 }
 
-export class UiDialogRef {
+export class LayerRef {
 	dialogComponent:any;
 	
 	close(callBack){
@@ -79,7 +70,7 @@ export class UiDialogRef {
 }
 
 @Injectable()
-export class UiDialog {
+export class NgLayer {
 	/**
 	 * 弹窗构造方法
 	 */
@@ -90,29 +81,28 @@ export class UiDialog {
 	/**
 	 * 打开弹窗
 	 */
-	open(parent:ViewContainerRef, componetType) {
+	dialog(parent:ViewContainerRef, componetType, title:string, layerState:LayerState) {
 		let dialogId = "dialog_"+new Date().getTime()
-		return this.createComponent_(parent, dialogId, componetType);
+		return this.createComponent_(parent, dialogId, componetType, title, layerState);
 	}
 	
 	/**
 	 * 
 	 */
-	alert(msg:string, okString:string){
+	alert(msg:string, okString:string, layerState:LayerState){
 		let temp = '<div class="iconing_ui_dialog_body iconing_ui_alert_body">'+
 				'<div class="iconing_ui_content">{{msg}}</div>'+
 				'<div class="iconing_ui_alert_btn">'+
 					'<button class="iconing_ui_btn_cancel" (click)="ok()">{{okTxt}}</button>'+
 				'</div>'+
 			'</div>';
-		
-		return this.confirmOralert_(temp, msg, okString);
+		return this.confirmOralert_(temp, msg, okString, null, layerState);
 	}
 	
 	/**
 	 * 
 	 */
-	confirm(msg:string, confirm:string, cancel:string){
+	confirm(msg:string, confirm:string, cancel:string, layerState:LayerState){
 		let temp = '<div class="iconing_ui_dialog_body iconing_ui_alert_body">'+
 				'<div class="iconing_ui_content">{{msg}}</div>'+
 				'<div class="iconing_ui_alert_btn">'+
@@ -121,10 +111,119 @@ export class UiDialog {
 				'</div>'+
 			'</div>';
 		
-		return this.confirmOralert_(temp, msg, confirm, cancel);
+		return this.confirmOralert_(temp, msg, confirm, cancel, layerState);
 	}
 	
-	confirmOralert_(temp:string, msg:string, okString:string, cancelString:string){
+	/**
+	 * 弹出提示信息
+	 */
+	msg(msg:string, duration:number, align:string, msgType:string, layerState:LayerState){
+		if(!duration) duration = 2500;
+		if(!msgType || ["warn","error","msg"].indexOf(msgType)<0) msgType="msg";
+		
+		return this.msgOrLoading_(msg, duration, align, msgType, layerState, true);
+	}
+	
+	/**
+	 * loading
+	 */
+	loading(msg:string, align:string, layerState:LayerState){
+		return this.msgOrLoading_(msg, null, align, null, layerState);
+	}
+	
+	/**
+	 * 
+	 */
+	msgOrLoading_(msg:string, duration:number, align:string, msgType:string, layerState:LayerState, isMsg:boolean){
+		let temp = '<div class="iconing_ui_msg_body iconing_ui_type_{{dialogType}} iconing_ui_type_{{msgType}}">{{msg}}</div>';
+		
+		let dialogId = "dialog_"+new Date().getTime(),
+			div = document.createElement("div");
+		
+		div.classList.add("iconing_ui_msg_backdrop");
+		div.classList.add(dialogId);
+		div.classList.add("iconing_ui_align_"+align);
+		document.body.appendChild(div);
+		
+		@Component({
+			selector:".iconing_ui_msg_backdrop."+dialogId+".iconing_ui_align_"+align,
+			template:temp,
+			providers:[LayerRef]
+		})
+		class DialogWraper {
+			thizRef:ComponentRef;
+			dialogRef:LayerRef;
+			msg:string = msg;
+			dialogEle:element;
+			msgType:string = msgType;
+			dialogType:string = isMsg?"msg":"loading";
+			
+			
+			trans:LayerState = layerState?layerState:{inSelector:"fallDown", outSelector:"vanishOut"};
+			
+			constructor(private dialogRef:LayerRef, private self:ViewContainerRef) {
+				dialogRef.dialogComponent = this;
+				this.dialogRef = dialogRef;
+			}
+			
+			ngAfterViewInit(){
+				this.dialogEle = this.self.element.nativeElement.querySelector(".iconing_ui_msg_body");
+				if(this.trans && this.trans.inSelector){
+					this.dialogEle.classList.add(this.trans.inSelector);
+				}
+				if(isMsg) setTimeout(()=>this.close(), duration+this.calCss_());
+			}
+			
+			/** */
+			close(){
+				if(this.trans && this.trans.outSelector){
+					let classList = this.dialogEle.classList;
+					classList.remove(this.trans.inSelector);
+					classList.add(this.trans.outSelector);
+					
+					/**
+					 * set a delay for dialog closeing so the animation has time to play
+					 */
+					setTimeout(()=>{this.thizRef.destroy();}, this.calCss_());
+				} else {
+					this.thizRef.destroy();
+				}
+			}	
+			
+			calCss_(){
+				let anima = getComputedStyle(this.dialogEle).animationDuration,
+					trans = getComputedStyle(this.dialogEle).animationDuration,
+					n1 = parseFloat(anima),
+					n2 = parseFloat(trans);
+				
+				if(n1){
+					let unit = anima.replace(n1, "").toLowerCase();
+					n1 = unit=="ms"?n1:unit=="s"?n1*1000:0;
+				}
+				
+				if(n2){
+					let unit = anima.replace(n2, "").toLowerCase();
+					n2 = unit=="ms"?n2:unit=="s"?n2*1000:0;
+				}
+				
+				return Math.max(n1,n2);
+			}
+		}
+		
+		@NgModule({declarations: [DialogWraper]})
+		class DM {}
+		
+		/** create dialog */
+		let moduleWithComponentFactories  = this.compiler.compileModuleAndAllComponentsSync(DM),
+			factory = moduleWithComponentFactories.componentFactories[0],
+			dialogWraper = this.appRef.bootstrap(factory);
+			
+			dialogWraper.instance.thizRef = dialogWraper;
+		
+		return dialogWraper.instance.dialogRef;
+	}
+	
+	confirmOralert_(temp:string, msg:string, okString:string, cancelString:string, layerState:LayerState){
 		let dialogId = "dialog_"+new Date().getTime(),
 			div = document.createElement("div");
 		
@@ -132,46 +231,12 @@ export class UiDialog {
 		div.classList.add(dialogId);
 		document.body.appendChild(div);
 		
-		@Component({
-			selector:".iconing_ui_dialog_backdrop."+dialogId,
-			template:temp,
-			providers:[UiDialogRef],
-			animations: []
-		})
-		class DialogWraper {
-			thizRef:ComponentRef;
-			dialogRef:UiDialogRef;
-			cancelTxt:string = cancelString;
-			okTxt:string = okString;			
-			msg:string = msg;
-			
-			constructor(private dialogRef:UiDialogRef){
-				dialogRef.dialogComponent = this;
-				this.dialogRef = dialogRef;
-			}
-			
-			/**
-			 * 
-			 */
-			close(){
-				if(!this.onClose || this.onClose()) this.thizRef.destroy();
-			}	
-			
-			cancel(){
-				if(!this.onCancel || this.onCancel()) this.thizRef.destroy();
-			}
-			
-			ok(){
-				if(!this.onOk || this.onOk()) this.thizRef.destroy();
-			}
-		}
+		let dialogWraperType = this.createComponentClass_(temp, dialogId, cancelString, okString, msg, layerState, null);
 		
-		@NgModule({declarations: [DialogWraper]})
+		@NgModule({declarations: [dialogWraperType]})
 		class DM {}
 		
-		/**
-		 * create dialog
-		 */
+		/** create dialog */
 		let moduleWithComponentFactories  = this.compiler.compileModuleAndAllComponentsSync(DM),
 			factory = moduleWithComponentFactories.componentFactories[0],
 			dialogWraper = this.appRef.bootstrap(factory);
@@ -180,6 +245,144 @@ export class UiDialog {
 			document.body.appendChild(dialogWraper.location.nativeElement);
 		
 		return dialogWraper.instance.dialogRef;
+	}
+	
+	/**
+	 * 
+	 */
+	createComponentClass_(
+		temp:string,
+		dialogId:string,
+		cancelString:string,
+		okString:string,
+		msg:string,
+		layerState:LayerState,
+		userComponent,
+		title:string
+	){
+		@Component({
+			selector:".iconing_ui_dialog_backdrop."+dialogId,
+			template:temp,
+			providers:[LayerRef]
+		})
+		class DialogWraper {
+			thizRef:ComponentRef;
+			dialogRef:LayerRef;
+			cancelTxt:string = cancelString;
+			okTxt:string = okString;			
+			msg:string = msg;
+			dialogEle:element;
+			backdropStyle:style,
+			title:string = title;
+			
+			trans:LayerState = layerState?layerState:{
+				inSelector:"fallDown",
+				outSelector:"vanishOut"
+			};
+			
+			@ViewChild('iconing_ui_dialog_content', {read: ViewContainerRef})
+			dialogView:ViewContainerRef;
+			
+			
+			/**
+			 * 
+			 */
+			constructor(private dialogRef:LayerRef, private compiler: Compiler, private self:ViewContainerRef) {
+				dialogRef.dialogComponent = this;
+				this.dialogRef = dialogRef;
+			}
+			
+			/**
+			 * add enter state selector to layer body
+			 */
+			ngAfterViewInit(){
+				this.dialogEle = this.self.element.nativeElement.querySelector(".iconing_ui_dialog_body");
+				
+				if(this.trans && this.trans.inSelector){
+					this.dialogEle.classList.add(this.trans.inSelector);
+					
+					this.backdropStyle.background = "rgba(95, 95, 95, 0.5)";
+					this.backdropStyle.transition = "background "+this.calCss_(this.dialogEle)+"ms";
+				}
+				
+			}
+			
+			/**
+			 * 
+			 */
+			ngOnInit(){
+				this.backdropStyle = this.self.element.nativeElement.style;
+				
+				if(userComponent){
+					@NgModule({declarations: [userComponent]})
+					class TempModule {}
+					
+					let moduleWithComponentFactories  = this.compiler.compileModuleAndAllComponentsAsync(TempModule);
+					
+					moduleWithComponentFactories.then((mvcf: ModuleWithComponentFactories <any>)=>{
+						let injector = ReflectiveInjector.fromResolvedProviders([], this.dialogView.injector);
+						this.dialogView.createComponent(mvcf.componentFactories[0], null, injector, []);
+					});
+				}
+			}
+			
+			
+			/** */
+			close(){
+				if(!this.onClose || this.onClose()) {
+					if(this.trans && this.trans.outSelector){
+						let classList = this.dialogEle.classList;
+						classList.remove(this.trans.inSelector);
+						classList.add(this.trans.outSelector);
+						let duration = this.calCss_(this.dialogEle);
+						this.backdropStyle.background = "rgba(95, 95, 95, 0)";
+						this.backdropStyle.transition = "background "+duration+"ms";
+						
+						/**
+						 * set a delay for dialog closeing so the animation has time to play
+						 */
+						setTimeout(()=>{this.thizRef.destroy();}, duration);
+					} else {
+						this.thizRef.destroy();
+					}
+				}
+			}	
+			
+			cancel(){
+				if(!this.onCancel || this.onCancel()) this.close();
+			}
+			
+			/**
+			 * alert or confirm dialog
+			 */
+			ok(){
+				if(!this.onOk || this.onOk()) this.close();
+			}
+			
+			/**
+			 * 
+			 */
+			calCss_(ele){
+				let anima = getComputedStyle(ele).animationDuration,
+					trans = getComputedStyle(ele).animationDuration,
+					n1 = parseFloat(anima),
+					n2 = parseFloat(trans);
+				
+				if(n1){
+					let unit = anima.replace(n1, "").toLowerCase();
+					n1 = unit=="ms"?n1:unit=="s"?n1*1000:0;
+				}
+				
+				if(n2){
+					let unit = anima.replace(n2, "").toLowerCase();
+					n2 = unit=="ms"?n2:unit=="s"?n2*1000:0;
+				}
+				
+				return Math.max(n1,n2);
+			}
+		}
+		
+		return DialogWraper; 
 	}
 	
 	/**
@@ -212,68 +415,20 @@ export class UiDialog {
 	/**
 	 * 生成组件
 	 */
-	private createComponent_(parent:ViewContainerRef, dialogId:string, userComponent:class) {
+	private createComponent_(parent:ViewContainerRef, dialogId:string, userComponent:class, title, layerState:LayerState) {
 		userComponent = this.modifySelector_(userComponent, "iconing_ui_dialog_content");
 		
-		@Component({
-			selector:".iconing_ui_dialog_backdrop",
-			template:'<div class="iconing_ui_dialog_body">'+
+		let temp = '<div class="iconing_ui_dialog_body">'+
 				'<div class="iconing_ui_dialog_header">'+
 					'<div class="iconing_ui_dialog_title">{{title}}</div>'+
 					'<button (click)="close();" class="iconing_ui_dialog_close_btn"></button>'+
 				'</div>'+
 				'<div #iconing_ui_dialog_content></div>'+
-			'</div>',
-			providers:[UiDialogRef],
-			animations: [
-				/*trigger('descriptionState', [])*/
-			]
-		})
-		class DialogWraper {
-			thizRef:ComponentRef;
-			dialogRef:UiDialogRef;
-			title:string;
-			
-			@ViewChild('iconing_ui_dialog_content', {read: ViewContainerRef})
-			dialogView:ViewContainerRef;
-			
-			constructor(private dialogRef:UiDialogRef, private compiler: Compiler){
-				dialogRef.dialogComponent = this;
-				this.dialogRef = dialogRef;
-			}
-			
-			
-			/**
-			 * load dialog content
-			 */
-			ngOnInit() {
-				@NgModule({declarations: [userComponent]})
-				class TempModule {}
-				
-				let moduleWithComponentFactories  = this.compiler.compileModuleAndAllComponentsAsync(TempModule);
-				
-				moduleWithComponentFactories.then((mvcf: ModuleWithComponentFactories <any>)=>{
-					let injector = ReflectiveInjector.fromResolvedProviders([], this.dialogView.injector);
-					this.dialogView.createComponent(mvcf.componentFactories[0], null, injector, []);
-				});
-			}
-			
-			/**
-			 * 
-			 */
-			close(){
-				if(!this.onClose || this.onClose()){
-					this.thizRef.destroy();
-				}
-			}
-			
-			/**
-			 * 
-			 */
-			onClose(){return true;}
-		}
+			'</div>'
 		
-		@NgModule({declarations: [DialogWraper]})
+		let dialogWraperType = this.createComponentClass_(temp, dialogId, null, null, null, layerState, userComponent, title);
+		
+		@NgModule({declarations: [dialogWraperType]})
 		class DM {}
 		
 		/**
