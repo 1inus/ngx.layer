@@ -1,6 +1,7 @@
 [document](http://ng2-layer.wemakers.net/doc.html)
 
 [live demo](http://ng2-layer.wemakers.net/demo.html)
+
 # Classes
 ## NgLayer
 可以把NgLayer 看作是一个弹出层的factory。NgLayer能够生成五种类型的弹层，分别对应五个方法(参数具体含义请看代码注释):

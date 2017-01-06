@@ -1,6 +1,24 @@
 {
-  "name": "angular2-in-Action",
+  "name": "angular2-layer",
   "version": "1.0.0",
+  "description": "angular2 dialog, alert, confirm, loading, tip",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1inus/angular2-layer.git"
+  },
+  "keywords": [
+    "angular2",
+    "dialog",
+    "alert",
+    "confirm",
+    "loading",
+    "tip",
+    "msg",
+    "message",
+    "layer"
+  ],
+  "author": "LiangWei",
+  "license": "Apache",
   "dependencies": {
     "@angular/common": "^2.4.0",
     "@angular/compiler": "^2.4.0",
