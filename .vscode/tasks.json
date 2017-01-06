@@ -1,0 +1,9 @@
+{
+    "version": "0.1.0", 
+    "command": "tsc",
+    //"command":"tscc",
+    "isShellCommand": true,
+    "showOutput": "always",
+    "args": ["-p", "."],
+    "problemMatcher": "$tsc"
+}

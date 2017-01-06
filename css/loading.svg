@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 612 612" enable-background="new 0 0 612 612" xml:space="preserve">
+<path fill="#FFFFFF" d="M306,242c-35,0-64,29-64,64s29,64,64,64s64-29,64-64C368.8,269.8,341,242,306,242z M306,325.3
+	c-10.9,0-19.3-8.5-19.3-19.3s8.5-19.3,19.3-19.3s19.3,8.5,19.3,19.3S316.9,325.3,306,325.3z"/>
+<path fill="#FFFFFF" d="M323.2,76.2c0-2.4-7.5-7.3-17.2-7.3s-16.1,4.8-17.2,7.3v210c5.4-0.6,10.7-1.2,17.2-1.2s11.8,0.6,17.2,1.2
+	V76.2z">
+<animateTransform  type="rotate" fill="remove" restart="always" calcMode="linear" additive="replace" accumulate="none" repeatCount="indefinite" dur="4s" to="360 306 306" from="0  306 306" attributeType="XML" attributeName="transform">
+		</animateTransform>
+</path>
+<path fill="#FFFFFF" d="M306,478.7c12.9,0,23.6-8.3,23.6-13.8V317c0,5.5-10.7,9.8-23.6,9.8s-23.6-4.3-23.6-9.8v147.9
+	C282.4,470.4,293.1,478.7,306,478.7z">
+<animateTransform  type="rotate" fill="remove" restart="always" calcMode="linear" additive="replace" accumulate="none" repeatCount="indefinite" dur="12s" to="360 306 306" from="0  306 306" attributeType="XML" attributeName="transform">
+		</animateTransform>
+</path>
+<path fill="#FFFFFF" d="M306,0C137.1,0,0,137.1,0,306s137.1,306,306,306s306-137.1,306-306S474.9,0,306,0z M306,566.7
+	C162,566.7,45.3,450,45.3,306S162,45.3,306,45.3S566.7,162,566.7,306S450,566.7,306,566.7z"/>
+</svg>

@@ -1,0 +1,18 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"module":"system",
+		"moduleResolution":"node",
+		"noImplicitAny": true,
+		"removeComments": true,
+		"target": "es5",
+		"sourceMap": false,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators":true,
+		 "typeRoots": ["node_modules/@types"],
+		"types": ["core-js"]
+	},
+	"exclude": [
+		"node_modules"
+	]
+}

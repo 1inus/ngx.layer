@@ -1,0 +1,66 @@
+body,html{
+	margin:0;
+	padding:0;
+	height:100%;
+}
+
+body{
+	max-width:1200px;
+	margin:0 auto;
+	text-align:center;
+	&:before{
+		content:"";
+		display:inline-block;
+		height:100%;
+		vertical-align: middle;
+		font-size:0;
+	}
+}
+
+.app{
+	display:inline-block;
+	vertical-align: middle;
+}
+
+input:not([type]), 
+input[type="email"],
+input[type="number"], 
+input[type="password"], 
+input[type="tel"], 
+input[type="url"], 
+input[type="text"],
+input[type="date"],
+input[type="datetime"],
+select,
+textarea{
+	padding:8px 10px;
+	box-sizing:border-box;
+	border-radius:1px;
+	border:1px solid #dbdbdb;
+}
+
+body,input,button,textarea{
+	font-family:-apple-system, "Helvetica Neue", Arial, "PingFang SC", "lucida grande", "lucida sans unicode", lucida, helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+	color:#404040;
+}
+
+button{
+	padding:4px 8px;
+	background:none;
+	border-style: solid;
+	border-width:1px;
+	color:#333;
+	background: linear-gradient( #FAFAFA, #F2F2F2);
+	outline:none;
+	line-height:1em;
+	
+	&:hover {
+		cursor: pointer;
+	}
+}
+
+.app button{
+	font-size:25px;
+	padding:10px 15px;
+	margin:15px;
+}
