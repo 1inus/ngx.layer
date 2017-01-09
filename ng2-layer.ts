@@ -255,6 +255,8 @@ export class NgLayerRef {
 
 @Injectable()
 export class NgLayer {
+	tempCache:any={};
+	
 	constructor(private compiler: Compiler, private appRef: ApplicationRef) {}
 	
 	/**
@@ -424,7 +426,7 @@ export class NgLayer {
 
 		temp = isConfirm?temp.replace("CANCELBUTTON",'<button class="iconing_btn_cancel" (click)="cancel()">{{config.cancelText}}</button>'):temp.replace("CANCELBUTTON","");
 
-		let layerWraperType = this.createComponentClass_(config, temp, layerId);
+		let layerWraperType = this.createComponentClass_(config, temp, layerId, this, false);
 		
 		@NgModule({declarations: [layerWraperType]})
 		class DM {}
@@ -441,12 +443,14 @@ export class NgLayer {
 	}
 	
 	/**
-	 * 
+	 * for dialog alert or confirm
 	 */
 	createComponentClass_(
 		config:LayerConfig,
 		temp:string,
-		layerId:string
+		layerId:string,
+		layerFact:NgLayer,
+		isDialog:boolean
 	){
 		config = this.default_(config);
 		@Component({
@@ -458,6 +462,7 @@ export class NgLayer {
 			thizRef:ComponentRef<any>;
 			layerEle:any;
 			backdropStyle:any;
+			layerFactory:NgLayer = layerFact;
 
 			config:LayerConfig=config;
 			
@@ -476,37 +481,46 @@ export class NgLayer {
 			 * add enter state selector to layer body
 			 */
 			ngAfterViewInit(){
-				let cfg = this.config;
-				this.layerEle = this.self.element.nativeElement.querySelector(".iconing_layer_body");
+				let t=this,
+					cfg = t.config;
 				
-				if(cfg.inSelector){
-					this.layerEle.classList.add(cfg.inSelector);
-					
-					this.backdropStyle.background = "rgba(95, 95, 95, 0.5)";
-					this.backdropStyle.transition = "background "+this.calCss_(this.layerEle)+"ms";
+				if(cfg.inSelector && !isDialog){
+					t.layerEle = t.self.element.nativeElement.querySelector(".iconing_layer_body");
+					t.layerEle.classList.add(cfg.inSelector);
+					t.backdropStyle.background = "rgba(95, 95, 95, 0.5)";
+					t.backdropStyle.transition = "background "+t.calCss_(t.layerEle)+"ms";
 				}
-				
 			}
 			
 			/**
-			 * 
+			 * init content Component
 			 */
 			ngOnInit(){
 				this.backdropStyle = this.self.element.nativeElement.style;
 				
-				if(config.dialogComponent){
-					@NgModule({declarations: [config.dialogComponent]})
-					class TempModule {}
-					
-					let moduleWithComponentFactories  = this.compiler.compileModuleAndAllComponentsAsync(TempModule);
-					
-					moduleWithComponentFactories.then((mvcf: ModuleWithComponentFactories <any>)=>{
-						let injector = ReflectiveInjector.fromResolvedProviders([], this.layerView.injector);
-						this.layerView.createComponent(mvcf.componentFactories[0], null, injector, []);
+				if(isDialog){
+					let promise = this.layerFactory.modifySelector_(config.dialogComponent, "iconing_layer_content");
+
+					promise.then((a)=>{						
+						@NgModule({declarations: [config.dialogComponent]})
+						class TempModule {}
+						
+						let t = this;
+
+						/** create layer */
+						let mwcf  = t.compiler.compileModuleAndAllComponentsSync(TempModule),
+							injector = ReflectiveInjector.fromResolvedProviders([], t.layerView.injector);
+							
+						t.layerView.createComponent(mwcf.componentFactories[0], null, injector, []);
+						
+						t.layerEle = t.self.element.nativeElement.querySelector(".iconing_layer_body");
+						t.layerEle.style.display = "inline-block";
+						t.layerEle.classList.add(t.config.inSelector);
+						t.backdropStyle.background = "rgba(95, 95, 95, 0.5)";
+						t.backdropStyle.transition = "background "+t.calCss_(t.layerEle)+"ms";
 					});
 				}
 			}
-			
 			
 			/** */
 			close(){
@@ -573,34 +587,64 @@ export class NgLayer {
 		return layerWraper; 
 	}
 	
+	/**
+	 * preload template and change selector, for dialog only
+	 */
 	private modifySelector_<T>(clazz:T, contentSelector:string) {
 		if(!(Reflect && Reflect.getOwnMetadata)){
 			throw 'reflect-metadata shim is required when using class decorators';
 		}
 		let mateData = Reflect.getOwnMetadata("annotations", new clazz().constructor);
-		let parentMateData = mateData.find(annotation => {
+		let mateData = mateData.find(annotation => {
 			if(annotation.toString()==="@Component") return annotation;
 		})
 		
-		if(!parentMateData){
+		if(!mateData){
 			throw 'component type required a @Component decorator';
 		}
-		
-		let newMataData = {selector:""};
-		for(let i of Object.keys(parentMateData)){
-			newMataData[i]=parentMateData[i];
+		mateData.selector = '.'+contentSelector;
+
+		/*pre load template*/
+		if(mateData.templateUrl){
+			if(!this.tempCache[mateData.templateUrl]){
+				return new Promise((resolve, reject)=>{
+					let http = new XMLHttpRequest();
+					http.onreadystatechange = (xhr)=>{
+						if(http.readyState === XMLHttpRequest.DONE) {
+							if(http.status === 200){
+								this.tempCache[mateData.templateUrl] = http.responseText;
+								mateData.template = http.responseText;
+								delete mateData.templateUrl;
+								
+								resolve(Component(mateData)(clazz));
+							} else {
+								console.error("canot load template: "+mateData.templateUrl);
+								reject();
+							}
+						}
+					}
+					http.open('GET', mateData.templateUrl, true);
+					http.send();
+				});
+			} else {
+				return new Promise((resolve, reject)=>{
+					mateData.template = this.tempCache[mateData.templateUrl];
+					delete mateData.templateUrl;
+					resolve(Component(mateData)(clazz));
+				});
+			}
+		} else {
+			return new Promise((resolve, reject)=>{
+				resolve(Component(mateData)(clazz));
+			});
 		}
-		newMataData.selector = '.'+contentSelector;
-		
-		let clazzTarget = Component(newMataData)(clazz);
-		
-		return clazzTarget;
 	}
 	
+	/**
+	 * for dialog only
+	 */
 	private createComponent_(config:LayerConfig, layerId:string) {
-		config.dialogComponent = this.modifySelector_(config.dialogComponent, "iconing_layer_content");
-		
-		let temp = '<div class="iconing_layer_body">'+
+		let temp = '<div class="iconing_layer_body" style="display:none;">'+
 				'<div class="iconing_layer_header">'+
 					'<div class="iconing_layer_title">{{config.title}}</div>'+
 					'<button (click)="close();" class="iconing_layer_close_btn {{config.closeAble?\'iconing_layer_close_able\':\'\'}}"></button>'+
@@ -608,7 +652,7 @@ export class NgLayer {
 				'<div #iconing_layer_content></div>'+
 			'</div>'
 		
-		let layerWraperType = this.createComponentClass_(config, temp, layerId);
+		let layerWraperType = this.createComponentClass_(config, temp, layerId, this, true);
 		
 		@NgModule({declarations: [layerWraperType]})
 		class DM {}
@@ -616,9 +660,10 @@ export class NgLayer {
 		/**
 		 * create layer
 		 */
-		let moduleWithComponentFactories  = this.compiler.compileModuleAndAllComponentsSync(DM),
+		let moduleWithComponentFactories = this.compiler.compileModuleAndAllComponentsSync(DM),
 			factory = moduleWithComponentFactories.componentFactories[0],
 			layerWraper = null;
+			
 		if(!parent){
 			layerWraper = this.appRef.bootstrap(factory);
 			document.body.appendChild(layerWraper.location.nativeElement);
@@ -633,6 +678,9 @@ export class NgLayer {
 		return layerWraper.instance.layerRef;
 	}
 
+	/**
+	 * default config
+	 */
 	default_(config:LayerConfig):LayerConfig {
 		let dfs:LayerConfig = {
 			title:"",

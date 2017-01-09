@@ -70,6 +70,7 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                 function NgLayer(compiler, appRef) {
                     this.compiler = compiler;
                     this.appRef = appRef;
+                    this.tempCache = {};
                 }
                 NgLayer.prototype.dialog = function (config) {
                     var layerId = "layer_" + new Date().getTime();
@@ -184,7 +185,7 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                         '</div>' +
                         '</div>';
                     temp = isConfirm ? temp.replace("CANCELBUTTON", '<button class="iconing_btn_cancel" (click)="cancel()">{{config.cancelText}}</button>') : temp.replace("CANCELBUTTON", "");
-                    var layerWraperType = this.createComponentClass_(config, temp, layerId);
+                    var layerWraperType = this.createComponentClass_(config, temp, layerId, this, false);
                     var DM = (function () {
                         function DM() {
                         }
@@ -199,42 +200,49 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                     document.body.appendChild(layerWraper.location.nativeElement);
                     return layerWraper.instance.layerRef;
                 };
-                NgLayer.prototype.createComponentClass_ = function (config, temp, layerId) {
+                NgLayer.prototype.createComponentClass_ = function (config, temp, layerId, layerFact, isDialog) {
                     config = this.default_(config);
                     var layerWraper = (function () {
                         function layerWraper(layerRef, compiler, self) {
                             this.layerRef = layerRef;
                             this.compiler = compiler;
                             this.self = self;
+                            this.layerFactory = layerFact;
                             this.config = config;
                             layerRef.layerComponent = this;
                         }
                         layerWraper.prototype.ngAfterViewInit = function () {
-                            var cfg = this.config;
-                            this.layerEle = this.self.element.nativeElement.querySelector(".iconing_layer_body");
-                            if (cfg.inSelector) {
-                                this.layerEle.classList.add(cfg.inSelector);
-                                this.backdropStyle.background = "rgba(95, 95, 95, 0.5)";
-                                this.backdropStyle.transition = "background " + this.calCss_(this.layerEle) + "ms";
+                            var t = this, cfg = t.config;
+                            if (cfg.inSelector && !isDialog) {
+                                t.layerEle = t.self.element.nativeElement.querySelector(".iconing_layer_body");
+                                t.layerEle.classList.add(cfg.inSelector);
+                                t.backdropStyle.background = "rgba(95, 95, 95, 0.5)";
+                                t.backdropStyle.transition = "background " + t.calCss_(t.layerEle) + "ms";
                             }
                         };
                         layerWraper.prototype.ngOnInit = function () {
                             var _this = this;
                             this.backdropStyle = this.self.element.nativeElement.style;
-                            if (config.dialogComponent) {
-                                var TempModule = (function () {
-                                    function TempModule() {
-                                    }
-                                    return TempModule;
-                                }());
-                                TempModule = __decorate([
-                                    core_1.NgModule({ declarations: [config.dialogComponent] }),
-                                    __metadata("design:paramtypes", [])
-                                ], TempModule);
-                                var moduleWithComponentFactories = this.compiler.compileModuleAndAllComponentsAsync(TempModule);
-                                moduleWithComponentFactories.then(function (mvcf) {
-                                    var injector = core_1.ReflectiveInjector.fromResolvedProviders([], _this.layerView.injector);
-                                    _this.layerView.createComponent(mvcf.componentFactories[0], null, injector, []);
+                            if (isDialog) {
+                                var promise = this.layerFactory.modifySelector_(config.dialogComponent, "iconing_layer_content");
+                                promise.then(function (a) {
+                                    var TempModule = (function () {
+                                        function TempModule() {
+                                        }
+                                        return TempModule;
+                                    }());
+                                    TempModule = __decorate([
+                                        core_1.NgModule({ declarations: [config.dialogComponent] }),
+                                        __metadata("design:paramtypes", [])
+                                    ], TempModule);
+                                    var t = _this;
+                                    var mwcf = t.compiler.compileModuleAndAllComponentsSync(TempModule), injector = core_1.ReflectiveInjector.fromResolvedProviders([], t.layerView.injector);
+                                    t.layerView.createComponent(mwcf.componentFactories[0], null, injector, []);
+                                    t.layerEle = t.self.element.nativeElement.querySelector(".iconing_layer_body");
+                                    t.layerEle.style.display = "inline-block";
+                                    t.layerEle.classList.add(t.config.inSelector);
+                                    t.backdropStyle.background = "rgba(95, 95, 95, 0.5)";
+                                    t.backdropStyle.transition = "background " + t.calCss_(t.layerEle) + "ms";
                                 });
                             }
                         };
@@ -296,36 +304,64 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                     return layerWraper;
                 };
                 NgLayer.prototype.modifySelector_ = function (clazz, contentSelector) {
+                    var _this = this;
                     if (!(Reflect && Reflect.getOwnMetadata)) {
                         throw 'reflect-metadata shim is required when using class decorators';
                     }
                     var mateData = Reflect.getOwnMetadata("annotations", new clazz().constructor);
-                    var parentMateData = mateData.find(function (annotation) {
+                    var mateData = mateData.find(function (annotation) {
                         if (annotation.toString() === "@Component")
                             return annotation;
                     });
-                    if (!parentMateData) {
+                    if (!mateData) {
                         throw 'component type required a @Component decorator';
                     }
-                    var newMataData = { selector: "" };
-                    for (var _i = 0, _a = Object.keys(parentMateData); _i < _a.length; _i++) {
-                        var i = _a[_i];
-                        newMataData[i] = parentMateData[i];
+                    mateData.selector = '.' + contentSelector;
+                    if (mateData.templateUrl) {
+                        if (!this.tempCache[mateData.templateUrl]) {
+                            return new Promise(function (resolve, reject) {
+                                var http = new XMLHttpRequest();
+                                http.onreadystatechange = function (xhr) {
+                                    if (http.readyState === XMLHttpRequest.DONE) {
+                                        if (http.status === 200) {
+                                            _this.tempCache[mateData.templateUrl] = http.responseText;
+                                            mateData.template = http.responseText;
+                                            delete mateData.templateUrl;
+                                            resolve(core_1.Component(mateData)(clazz));
+                                        }
+                                        else {
+                                            console.error("canot load template: " + mateData.templateUrl);
+                                            reject();
+                                        }
+                                    }
+                                };
+                                http.open('GET', mateData.templateUrl, true);
+                                http.send();
+                            });
+                        }
+                        else {
+                            return new Promise(function (resolve, reject) {
+                                mateData.template = _this.tempCache[mateData.templateUrl];
+                                delete mateData.templateUrl;
+                                resolve(core_1.Component(mateData)(clazz));
+                            });
+                        }
                     }
-                    newMataData.selector = '.' + contentSelector;
-                    var clazzTarget = core_1.Component(newMataData)(clazz);
-                    return clazzTarget;
+                    else {
+                        return new Promise(function (resolve, reject) {
+                            resolve(core_1.Component(mateData)(clazz));
+                        });
+                    }
                 };
                 NgLayer.prototype.createComponent_ = function (config, layerId) {
-                    config.dialogComponent = this.modifySelector_(config.dialogComponent, "iconing_layer_content");
-                    var temp = '<div class="iconing_layer_body">' +
+                    var temp = '<div class="iconing_layer_body" style="display:none;">' +
                         '<div class="iconing_layer_header">' +
                         '<div class="iconing_layer_title">{{config.title}}</div>' +
                         '<button (click)="close();" class="iconing_layer_close_btn {{config.closeAble?\'iconing_layer_close_able\':\'\'}}"></button>' +
                         '</div>' +
                         '<div #iconing_layer_content></div>' +
                         '</div>';
-                    var layerWraperType = this.createComponentClass_(config, temp, layerId);
+                    var layerWraperType = this.createComponentClass_(config, temp, layerId, this, true);
                     var DM = (function () {
                         function DM() {
                         }
