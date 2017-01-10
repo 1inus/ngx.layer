@@ -13,7 +13,8 @@ import {
 	ReflectiveInjector,
 	ModuleWithComponentFactories,
 	ComponentRef,
-	ViewChild
+	ViewChild,
+	ComponentFactory
 } from '@angular/core';
 
 export class LayerConfig {
