@@ -204,6 +204,12 @@ export class LayerConfig {
 	dialogComponent:any;
 	
 	/**
+	 * if you want to use some custom directive in your dynamic component,
+	 * don't forget to declare
+	 */
+	declarations:Array<any>;
+	
+	/**
 	 * dialog title
 	 * valid only for dialog leyer
 	 */

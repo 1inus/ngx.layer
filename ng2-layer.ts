@@ -13,7 +13,8 @@ import {
 	ReflectiveInjector,
 	ModuleWithComponentFactories,
 	ComponentRef,
-	ViewChild
+	ViewChild,
+	ComponentFactoryResolver
 } from '@angular/core';
 
 export class LayerConfig {
@@ -30,6 +31,12 @@ export class LayerConfig {
 	 * valid only for dialog leyer
 	 */
 	dialogComponent:any;
+
+	/**
+	 * if you want to use some custom directive in your dynamic component,
+	 * don't forget to declare
+	 */
+	declarations:Array<any>;
 	
 	/**
 	 * dialog title
@@ -257,7 +264,7 @@ export class NgLayerRef {
 export class NgLayer {
 	tempCache:any={};
 	
-	constructor(private compiler: Compiler, private appRef: ApplicationRef) {}
+	constructor(private compiler: Compiler, private appRef: ApplicationRef, private res:ComponentFactoryResolver) {}
 	
 	/**
 	 * open a dialog window
@@ -501,9 +508,25 @@ export class NgLayer {
 				if(isDialog){
 					let promise = this.layerFactory.modifySelector_(config.dialogComponent, "iconing_layer_content");
 
-					promise.then((a)=>{						
+					promise.then((a)=>{
+						/**
+						 * Ugly angular2
+						 */
+						let dc = config.dialogComponent,
+							decl = config.declarations;
 						
-						@NgModule({declarations: [config.dialogComponent]})
+						if(decl){
+							let i = config.declarations.indexOf(dc);
+							if(i>0){
+								decl = decl.splice(i, 1);
+							}
+							
+							decl = [dc].concat(decl);
+						} else {
+							decl = [dc];
+						}
+						
+						@NgModule({declarations: decl})
 						class TempModule {}
 						
 						let t = this;
@@ -597,7 +620,8 @@ export class NgLayer {
 			throw 'reflect-metadata shim is required when using class decorators';
 		}
 		let mateData = Reflect.getOwnMetadata("annotations", clazz);
-		let mateData = mateData.find(annotation => {
+		
+		mateData = mateData.find((annotation:any) => {
 			if(annotation.toString()==="@Component") return annotation;
 		})
 		

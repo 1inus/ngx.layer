@@ -67,9 +67,10 @@ System.register(["@angular/core"], function (exports_1, context_1) {
             }());
             exports_1("NgLayerRef", NgLayerRef);
             NgLayer = (function () {
-                function NgLayer(compiler, appRef) {
+                function NgLayer(compiler, appRef, res) {
                     this.compiler = compiler;
                     this.appRef = appRef;
+                    this.res = res;
                     this.tempCache = {};
                 }
                 NgLayer.prototype.dialog = function (config) {
@@ -226,13 +227,24 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                             if (isDialog) {
                                 var promise = this.layerFactory.modifySelector_(config.dialogComponent, "iconing_layer_content");
                                 promise.then(function (a) {
+                                    var dc = config.dialogComponent, decl = config.declarations;
+                                    if (decl) {
+                                        var i = config.declarations.indexOf(dc);
+                                        if (i > 0) {
+                                            decl = decl.splice(i, 1);
+                                        }
+                                        decl = [dc].concat(decl);
+                                    }
+                                    else {
+                                        decl = [dc];
+                                    }
                                     var TempModule = (function () {
                                         function TempModule() {
                                         }
                                         return TempModule;
                                     }());
                                     TempModule = __decorate([
-                                        core_1.NgModule({ declarations: [config.dialogComponent] }),
+                                        core_1.NgModule({ declarations: decl }),
                                         __metadata("design:paramtypes", [])
                                     ], TempModule);
                                     var t = _this;
@@ -311,7 +323,7 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                         throw 'reflect-metadata shim is required when using class decorators';
                     }
                     var mateData = Reflect.getOwnMetadata("annotations", clazz);
-                    var mateData = mateData.find(function (annotation) {
+                    mateData = mateData.find(function (annotation) {
                         if (annotation.toString() === "@Component")
                             return annotation;
                     });
@@ -414,7 +426,7 @@ System.register(["@angular/core"], function (exports_1, context_1) {
             }());
             NgLayer = __decorate([
                 core_1.Injectable(),
-                __metadata("design:paramtypes", [core_1.Compiler, core_1.ApplicationRef])
+                __metadata("design:paramtypes", [core_1.Compiler, core_1.ApplicationRef, core_1.ComponentFactoryResolver])
             ], NgLayer);
             exports_1("NgLayer", NgLayer);
         }
