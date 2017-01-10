@@ -258,7 +258,7 @@ export class NgLayerRef {
 export class NgLayer {
 	tempCache:any={};
 	
-	constructor(private compiler: Compiler, private appRef: ApplicationRef) {}
+	constructor(private compiler: Compiler, private appRef: ApplicationRef, private compFac:ComponentFactory) {}
 	
 	/**
 	 * open a dialog window
@@ -507,6 +507,7 @@ export class NgLayer {
 						class TempModule {}
 						
 						let t = this;
+
 
 						/** create layer */
 						let mwcf  = t.compiler.compileModuleAndAllComponentsSync(TempModule),

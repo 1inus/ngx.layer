@@ -236,8 +236,10 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                                         __metadata("design:paramtypes", [])
                                     ], TempModule);
                                     var t = _this;
-                                    var mwcf = t.compiler.compileModuleAndAllComponentsSync(TempModule), injector = core_1.ReflectiveInjector.fromResolvedProviders([], t.layerView.injector);
-                                    t.layerView.createComponent(mwcf.componentFactories[0], null, injector, []);
+                                    t.compiler.clearCache();
+                                    var factory = t.compiler.compileModuleAndAllComponentsSync(TempModule).componentFactories[0];
+                                    var injector = core_1.ReflectiveInjector.fromResolvedProviders([], t.layerView.injector);
+                                    t.layerView.createComponent(factory, null, injector, []);
                                     t.layerEle = t.self.element.nativeElement.querySelector(".iconing_layer_body");
                                     t.layerEle.style.display = "inline-block";
                                     t.layerEle.classList.add(t.config.inSelector);
