@@ -526,7 +526,13 @@ export class NgLayer {
 							decl = [dc];
 						}
 						
-						@NgModule({declarations: decl})
+						let mateData = Reflect.getOwnMetadata("annotations", this.layerFactory.res.instance.constructor);
+		
+						mateData = mateData.find((annotation:any) => {
+							if(annotation.toString()==="@NgModule") return annotation;
+						})
+					
+						@NgModule({imports:mateData.imports, declarations: decl})
 						class TempModule {}
 						
 						let t = this;
