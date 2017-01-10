@@ -13,8 +13,7 @@ import {
 	ReflectiveInjector,
 	ModuleWithComponentFactories,
 	ComponentRef,
-	ViewChild,
-	ComponentFactory
+	ViewChild
 } from '@angular/core';
 
 export class LayerConfig {
@@ -258,7 +257,7 @@ export class NgLayerRef {
 export class NgLayer {
 	tempCache:any={};
 	
-	constructor(private compiler: Compiler, private appRef: ApplicationRef, private compFac:ComponentFactory) {}
+	constructor(private compiler: Compiler, private appRef: ApplicationRef) {}
 	
 	/**
 	 * open a dialog window
@@ -309,7 +308,7 @@ export class NgLayer {
 	 * 
 	 */
 	tipOrLoading_(config:LayerConfig, isTip:boolean){
-	if(!config.outSelector){
+		if(!config.outSelector){
 			config.outSelector = "boingOut";
 		}
 
@@ -503,17 +502,18 @@ export class NgLayer {
 					let promise = this.layerFactory.modifySelector_(config.dialogComponent, "iconing_layer_content");
 
 					promise.then((a)=>{						
+						
 						@NgModule({declarations: [config.dialogComponent]})
 						class TempModule {}
 						
 						let t = this;
-
+						t.compiler.clearCache();
+						let factory:any = t.compiler.compileModuleAndAllComponentsSync(TempModule).componentFactories[0];
 
 						/** create layer */
-						let mwcf  = t.compiler.compileModuleAndAllComponentsSync(TempModule),
-							injector = ReflectiveInjector.fromResolvedProviders([], t.layerView.injector);
-							
-						t.layerView.createComponent(mwcf.componentFactories[0], null, injector, []);
+						let injector = ReflectiveInjector.fromResolvedProviders([], t.layerView.injector);
+						
+						t.layerView.createComponent(factory, null, injector, []);
 						
 						t.layerEle = t.self.element.nativeElement.querySelector(".iconing_layer_body");
 						t.layerEle.style.display = "inline-block";
@@ -596,7 +596,7 @@ export class NgLayer {
 		if(!(Reflect && Reflect.getOwnMetadata)){
 			throw 'reflect-metadata shim is required when using class decorators';
 		}
-		let mateData = Reflect.getOwnMetadata("annotations", new clazz().constructor);
+		let mateData = Reflect.getOwnMetadata("annotations", clazz);
 		let mateData = mateData.find(annotation => {
 			if(annotation.toString()==="@Component") return annotation;
 		})

@@ -310,7 +310,7 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                     if (!(Reflect && Reflect.getOwnMetadata)) {
                         throw 'reflect-metadata shim is required when using class decorators';
                     }
-                    var mateData = Reflect.getOwnMetadata("annotations", new clazz().constructor);
+                    var mateData = Reflect.getOwnMetadata("annotations", clazz);
                     var mateData = mateData.find(function (annotation) {
                         if (annotation.toString() === "@Component")
                             return annotation;
