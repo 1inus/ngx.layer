@@ -18,7 +18,6 @@ import {
 } from '@angular/core';
 
 export class LayerConfig {
-	
 	/**
 	 * the new component will be a child of parent, if parent is null,
 	 * new component will be a root component of application.
@@ -37,6 +36,11 @@ export class LayerConfig {
 	 * don't forget to declare
 	 */
 	declarations:Array<any>;
+
+	/**
+	 * datas pass to dialog component
+	 */
+	data:Object;
 	
 	/**
 	 * dialog title
@@ -540,9 +544,12 @@ export class NgLayer {
 						let factory:any = t.compiler.compileModuleAndAllComponentsSync(TempModule).componentFactories[0];
 
 						/** create layer */
-						let injector = ReflectiveInjector.fromResolvedProviders([], t.layerView.injector);
-						
-						t.layerView.createComponent(factory, null, injector, []);
+						let injector = ReflectiveInjector.fromResolvedProviders([], t.layerView.injector),
+							component = t.layerView.createComponent(factory, null, injector, []).instance;
+
+						if(config.data && config.data instanceof Object){
+							Object.assign(component, config.data);
+						}
 						
 						t.layerEle = t.self.element.nativeElement.querySelector(".iconing_layer_body");
 						t.layerEle.style.display = "inline-block";

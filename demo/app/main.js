@@ -50,6 +50,8 @@ System.register(["@angular/core", "@angular/platform-browser", "@angular/platfor
                         DialogComponet.prototype.close = function () { this.ly.close(); };
                         DialogComponet.prototype.showCloseBtn = function () { this.ly.showCloseBtn(true); };
                         ;
+                        DialogComponet.prototype.showData = function () { alert(this.name); };
+                        ;
                         return DialogComponet;
                     }());
                     DialogComponet = __decorate([
@@ -59,7 +61,8 @@ System.register(["@angular/core", "@angular/platform-browser", "@angular/platfor
                     var dialog = this.ly.dialog({
                         parent: this.vcRef,
                         dialogComponent: DialogComponet,
-                        closeAble: false
+                        closeAble: false,
+                        data: { name: "Angular2 Layer" }
                     });
                 };
                 AppComponent.prototype.alert = function () {

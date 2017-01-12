@@ -255,8 +255,10 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                                     var t = _this;
                                     t.compiler.clearCache();
                                     var factory = t.compiler.compileModuleAndAllComponentsSync(TempModule).componentFactories[0];
-                                    var injector = core_1.ReflectiveInjector.fromResolvedProviders([], t.layerView.injector);
-                                    t.layerView.createComponent(factory, null, injector, []);
+                                    var injector = core_1.ReflectiveInjector.fromResolvedProviders([], t.layerView.injector), component = t.layerView.createComponent(factory, null, injector, []).instance;
+                                    if (config.data && config.data instanceof Object) {
+                                        Object.assign(component, config.data);
+                                    }
                                     t.layerEle = t.self.element.nativeElement.querySelector(".iconing_layer_body");
                                     t.layerEle.style.display = "inline-block";
                                     t.layerEle.classList.add(t.config.inSelector);

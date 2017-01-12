@@ -23,6 +23,8 @@ export class AppComponent {
 		//dynamic component class
 		@Component({templateUrl: "temp/dialog.html"})
 		class DialogComponet {
+			name:string;
+
 			constructor(private ly:NgLayerRef, private data:DataShare){}
 			
 			setTitle(){this.ly.setTitle("Angular2 Layer Title");}
@@ -30,6 +32,8 @@ export class AppComponent {
 			close(){this.ly.close();}
 			
 			showCloseBtn(){this.ly.showCloseBtn(true)};
+
+			showData(){alert(this.name)};
 		}
 		
 		/**
@@ -39,7 +43,8 @@ export class AppComponent {
 		let dialog = this.ly.dialog({
 			parent:this.vcRef,
 			dialogComponent:DialogComponet,
-			closeAble:false
+			closeAble:false,
+			data:{name:"Angular2 Layer"}
 		});
 	}
 	
