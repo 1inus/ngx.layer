@@ -36,6 +36,12 @@ export class LayerConfig {
 	 * don't forget to declare
 	 */
 	declarations:Array<any>;
+	
+	/**
+	 * if you want to use some custom directive in your dynamic component,
+	 * don't forget to import
+	 */
+	imports:Array<any>;
 
 	/**
 	 * datas pass to dialog component
@@ -530,13 +536,13 @@ export class NgLayer {
 							decl = [dc];
 						}
 						
-						let mateData = Reflect.getOwnMetadata("annotations", this.layerFactory.res.instance.constructor);
+						let mateData:any = {declarations: decl};
 		
-						mateData = mateData.find((annotation:any) => {
-							if(annotation.toString()==="@NgModule") return annotation;
-						})
+						if(config.imports){
+							mateData.imports = config.imports;
+						}
 					
-						@NgModule({imports:mateData.imports, declarations: decl})
+						@NgModule(mateData)
 						class TempModule {}
 						
 						let t = this;

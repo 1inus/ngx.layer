@@ -238,18 +238,17 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                                     else {
                                         decl = [dc];
                                     }
-                                    var mateData = Reflect.getOwnMetadata("annotations", _this.layerFactory.res.instance.constructor);
-                                    mateData = mateData.find(function (annotation) {
-                                        if (annotation.toString() === "@NgModule")
-                                            return annotation;
-                                    });
+                                    var mateData = { declarations: decl };
+                                    if (config.imports) {
+                                        mateData.imports = config.imports;
+                                    }
                                     var TempModule = (function () {
                                         function TempModule() {
                                         }
                                         return TempModule;
                                     }());
                                     TempModule = __decorate([
-                                        core_1.NgModule({ imports: mateData.imports, declarations: decl }),
+                                        core_1.NgModule(mateData),
                                         __metadata("design:paramtypes", [])
                                     ], TempModule);
                                     var t = _this;

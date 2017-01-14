@@ -7,6 +7,9 @@
 npm install angular2-layer
 ```
 
+#Release notes
+* 2017/1/12——passing data to the component by LayerConfig.data
+
 # Classes
 ## NgLayer
 可以把NgLayer 看作是一个弹出层的factory。NgLayer能够生成五种类型的弹层，分别对应五个方法(参数具体含义请看代码注释):
@@ -177,6 +180,8 @@ class NgLayerRef{
 LayerConfig 是弹出层的配置类
 * <code class="lang-TypeScript">parent:ViewContainerRef</code>，dialog的父组件，如果定义了parent，dialog内部的组件将成为parent的子组件，否则成为根组件
 * <code class="lang-TypeScript">dialogComponent:any</code>，dialog 内容部分的Component 类
+* <code class="lang-TypeScript">declarations:Array<any></code>，dialogComponent用到的指令需要额外声明，已经在module的imports内声明的指令不需要再次声明
+* <code class="lang-TypeScript">data:Object</code>，需要传递到dialogComponent内的参数可以在此声明，传递进来的数据要在Component完全初始化完毕之后才生效
 * <code class="lang-TypeScript">title:string</code>，dialog的标题
 * <code class="lang-TypeScript">closeAble:boolean</code>，dialog是否显示关闭按钮
 * <code class="lang-TypeScript">message:string</code>，tip,loading,alert,confirm弹层的提示文字
@@ -189,7 +194,6 @@ LayerConfig 是弹出层的配置类
 * <code class="lang-TypeScript">outSelector:string</code>，配置弹层关闭时候的转场效果，实际上是为弹层指定一个class选择器，以便运用动画。默认提供可选的值有：rollOut, fadeOutDown, bounceOut, vanishOut, spaceOut, boingOut, fadeOutDown
 ```TypeScript
 export class LayerConfig {
-	
 	/**
 	 * the new component will be a child of parent, if parent is null,
 	 * new component will be a root component of application.
@@ -202,12 +206,17 @@ export class LayerConfig {
 	 * valid only for dialog leyer
 	 */
 	dialogComponent:any;
-	
+
 	/**
 	 * if you want to use some custom directive in your dynamic component,
 	 * don't forget to declare
 	 */
 	declarations:Array<any>;
+
+	/**
+	 * datas pass to dialog component
+	 */
+	data:Object;
 	
 	/**
 	 * dialog title
@@ -220,7 +229,7 @@ export class LayerConfig {
 	 * valid only for dialog leyer
 	 */
 	closeAble:boolean;
-	
+
 	/**
 	 * message type of tip layer.
 	 * valid for alert, confirm, tip, loading leyer
@@ -250,13 +259,13 @@ export class LayerConfig {
 	 * valid only for loading leyer
 	 */
 	isModal:boolean;
-	
+
 	/**
 	 * layer will be automatic closed after duration(ms)
 	 * valid only for tip leyer
 	 */
 	tipDuration:number;
-	
+
 	/**
 	 * defined a popup animation by a class selector
 	 * valid for all type leyer.
