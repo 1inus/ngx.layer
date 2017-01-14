@@ -8,6 +8,7 @@ npm install angular2-layer
 ```
 
 #Release notes
+* 2017/1/14——add LayerConfig.imports and  LayerConfig.declarations
 * 2017/1/12——passing data to the component by LayerConfig.data
 
 # Classes
@@ -180,7 +181,8 @@ class NgLayerRef{
 LayerConfig 是弹出层的配置类
 * <code class="lang-TypeScript">parent:ViewContainerRef</code>，dialog的父组件，如果定义了parent，dialog内部的组件将成为parent的子组件，否则成为根组件
 * <code class="lang-TypeScript">dialogComponent:any</code>，dialog 内容部分的Component 类
-* <code class="lang-TypeScript">declarations:Array<any></code>，dialogComponent用到的指令需要额外声明，已经在module的imports内声明的指令不需要再次声明
+* <code class="lang-TypeScript">declarations:Array<any></code>，dialogComponent用到的指令需要额外声明
+* <code class="lang-TypeScript">imports:Array<any></code>，dialogComponent用到的指令需要额外import(如果定义在Module里)
 * <code class="lang-TypeScript">data:Object</code>，需要传递到dialogComponent内的参数可以在此声明，传递进来的数据要在Component完全初始化完毕之后才生效
 * <code class="lang-TypeScript">title:string</code>，dialog的标题
 * <code class="lang-TypeScript">closeAble:boolean</code>，dialog是否显示关闭按钮
@@ -212,6 +214,12 @@ export class LayerConfig {
 	 * don't forget to declare
 	 */
 	declarations:Array<any>;
+	
+	/**
+	 * if you want to use some custom directive in your dynamic component,
+	 * don't forget to import
+	 */
+	imports:Array<any>;
 
 	/**
 	 * datas pass to dialog component
