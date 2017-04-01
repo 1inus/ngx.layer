@@ -33,6 +33,7 @@ System.register(["@angular/core", "@angular/platform-browser", "@angular/platfor
                 }
                 return DataShare;
             }());
+            exports_1("DataShare", DataShare);
             AppComponent = (function () {
                 function AppComponent(ly, vcRef, data) {
                     this.ly = ly;
@@ -115,8 +116,7 @@ System.register(["@angular/core", "@angular/platform-browser", "@angular/platfor
                     declarations: [AppComponent],
                     bootstrap: [AppComponent],
                     providers: [DataShare]
-                }),
-                __metadata("design:paramtypes", [])
+                })
             ], AppModule);
             platform_browser_dynamic_1.platformBrowserDynamic().bootstrapModule(AppModule);
         }

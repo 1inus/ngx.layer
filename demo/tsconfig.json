@@ -1,6 +1,6 @@
 {
   "files": [
-	"ng2-layer.ts"
+	"app/main.ts"
   ],
   "compileOnSave": true,
   "compilerOptions": {
@@ -12,10 +12,10 @@
 	"sourceMap": false,
 	"emitDecoratorMetadata": true,
 	"experimentalDecorators": true,
+	"allowJs": true,
 	"lib": ["es2017", "dom"]
   },
   "exclude": [
 	"node_modules"
   ]
 }
-//dts-generator --name angular2-layer --project ./ --out index.d.ts

@@ -167,8 +167,7 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                         return DM;
                     }());
                     DM = __decorate([
-                        core_1.NgModule({ declarations: [LayerWraper] }),
-                        __metadata("design:paramtypes", [])
+                        core_1.NgModule({ declarations: [LayerWraper] })
                     ], DM);
                     var moduleWithComponentFactories = this.compiler.compileModuleAndAllComponentsSync(DM), factory = moduleWithComponentFactories.componentFactories[0], layerWraper = this.appRef.bootstrap(factory);
                     layerWraper.instance.thizRef = layerWraper;
@@ -193,8 +192,7 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                         return DM;
                     }());
                     DM = __decorate([
-                        core_1.NgModule({ declarations: [layerWraperType] }),
-                        __metadata("design:paramtypes", [])
+                        core_1.NgModule({ declarations: [layerWraperType] })
                     ], DM);
                     var moduleWithComponentFactories = this.compiler.compileModuleAndAllComponentsSync(DM), factory = moduleWithComponentFactories.componentFactories[0], layerWraper = this.appRef.bootstrap(factory);
                     layerWraper.instance.thizRef = layerWraper;
@@ -248,8 +246,7 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                                         return TempModule;
                                     }());
                                     TempModule = __decorate([
-                                        core_1.NgModule(mateData),
-                                        __metadata("design:paramtypes", [])
+                                        core_1.NgModule(mateData)
                                     ], TempModule);
                                     var t = _this;
                                     t.compiler.clearCache();
@@ -388,8 +385,7 @@ System.register(["@angular/core"], function (exports_1, context_1) {
                         return DM;
                     }());
                     DM = __decorate([
-                        core_1.NgModule({ declarations: [layerWraperType] }),
-                        __metadata("design:paramtypes", [])
+                        core_1.NgModule({ declarations: [layerWraperType] })
                     ], DM);
                     var moduleWithComponentFactories = this.compiler.compileModuleAndAllComponentsSync(DM), factory = moduleWithComponentFactories.componentFactories[0], layerWraper = null;
                     if (!parent) {

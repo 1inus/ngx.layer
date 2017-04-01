@@ -4,18 +4,17 @@
  */
 
 import {
+	ApplicationRef,
 	Compiler,
 	Component,
-	NgModule,
-	Injectable,
-	ViewContainerRef,
-	ApplicationRef,
-	ReflectiveInjector,
-	ModuleWithComponentFactories,
+	ComponentFactoryResolver,
 	ComponentRef,
+	Injectable,
+	NgModule,
 	ViewChild,
-	ComponentFactoryResolver
-} from '@angular/core';
+	ReflectiveInjector,
+	ViewContainerRef
+} from "@angular/core";
 
 export class LayerConfig {
 	/**
@@ -23,78 +22,78 @@ export class LayerConfig {
 	 * new component will be a root component of application.
 	 * valid only for dialog leyer
 	 */
-	parent:ViewContainerRef;
+	parent?:ViewContainerRef;
 	
 	/**
 	 * a class for creating new component
 	 * valid only for dialog leyer
 	 */
-	dialogComponent:any;
+	dialogComponent?:any;
 
 	/**
 	 * if you want to use some custom directive in your dynamic component,
 	 * don't forget to declare
 	 */
-	declarations:Array<any>;
+	declarations?:Array<any>;
 	
 	/**
 	 * if you want to use some custom directive in your dynamic component,
 	 * don't forget to import
 	 */
-	imports:Array<any>;
+	imports?:Array<any>;
 
 	/**
 	 * datas pass to dialog component
 	 */
-	data:Object;
+	data?:any;
 	
 	/**
 	 * dialog title
 	 * valid only for dialog leyer
 	 */
-	title:string;
+	title?:string;
 	
 	/**
 	 * show close button or not.
 	 * valid only for dialog leyer
 	 */
-	closeAble:boolean;
+	closeAble?:boolean;
 
 	/**
 	 * message type of tip layer.
 	 * valid for alert, confirm, tip, loading leyer
 	 */
-	message:string;
+	message?:string;
 	
 	/**
 	 * text of "ok" button.
 	 * valid for alert or confirm leyer
 	 */
-	okText:string;
+	okText?:string;
 	
 	/**
 	 * text of "cancel" button
 	 * valid only for confirm leyer
 	 */
-	cancelText:string;
+	cancelText?:string;
 	
 	/**
 	 * position of the layer("top", "center", "bottom"), default to "top"
 	 * valid only for loading or tip leyer
 	 */
-	align:string;
+	align?:string;
 	
 	/**
 	 * modal window or not
 	 * valid only for loading leyer
 	 */
-	isModal:boolean;
+	isModal?:boolean;
 
 	/**
 	 * layer will be automatic closed after duration(ms)
 	 * valid only for tip leyer
 	 */
-	tipDuration:number;
+	tipDuration?:number;
 
 	/**
 	 * defined a popup animation by a class selector
@@ -104,7 +103,7 @@ export class LayerConfig {
 	 * rollIn, fallDown, fadeInDown, runIn, bounceIn, 
 	 * splatIn, dropDown, vanishIn, spaceIn, jelly, fadeInUp,
 	 */
-	inSelector:string;
+	inSelector?:string;
 	
 	/**
 	 * defined a closeing animation by a class selector
@@ -114,7 +113,7 @@ export class LayerConfig {
 	 * rollOut, fadeOutDown, bounceOut, vanishOut, spaceOut,
 	 * boingOut, fadeOutDown
 	 */
-	outSelector:string;
+	outSelector?:string;
 }
 
 export class NgLayerRef {
@@ -272,7 +271,7 @@ export class NgLayerRef {
 
 @Injectable()
 export class NgLayer {
-	tempCache:any={};
+	private tempCache:any={};
 	
 	constructor(private compiler: Compiler, private appRef: ApplicationRef, private res:ComponentFactoryResolver) {}
 	
@@ -324,7 +323,7 @@ export class NgLayer {
 	/**
 	 * 
 	 */
-	tipOrLoading_(config:LayerConfig, isTip:boolean){
+	private tipOrLoading_(config:LayerConfig, isTip:boolean){
 		if(!config.outSelector){
 			config.outSelector = "boingOut";
 		}
@@ -426,7 +425,7 @@ export class NgLayer {
 		return layerWraper.instance.layerRef;
 	}
 	
-	confirmOralert_(config:LayerConfig, isConfirm:boolean){
+	private confirmOralert_(config:LayerConfig, isConfirm:boolean){
 		let layerId = "layer_"+new Date().getTime(),
 			div = document.createElement("div");
 		
@@ -462,7 +461,7 @@ export class NgLayer {
 	/**
 	 * for dialog alert or confirm
 	 */
-	createComponentClass_(
+	private createComponentClass_(
 		config:LayerConfig,
 		temp:string,
 		layerId:string,
@@ -726,7 +725,7 @@ export class NgLayer {
 	/**
 	 * default config
 	 */
-	default_(config:LayerConfig):LayerConfig {
+	private default_(config:LayerConfig):LayerConfig {
 		let dfs:LayerConfig = {
 			title:"",
 			align:"center",

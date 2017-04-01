@@ -5,7 +5,7 @@ import {NgLayer, NgLayerRef} from "../../ng2-layer.js";
 
 enableProdMode();
 
-class DataShare {
+export class DataShare {
 	somedata:any;
 }
 
