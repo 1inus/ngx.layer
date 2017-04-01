@@ -1,6 +1,6 @@
 {
   "name": "angular2-layer",
-  "version": "1.2.14",
+  "version": "1.2.17",
   "main":"ng2-layer.js",
   "description": "angular2 dialog, alert, confirm, loading, tip",
   "repository": {
