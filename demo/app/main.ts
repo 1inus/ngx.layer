@@ -1,91 +1,77 @@
-import {Component,NgModule,ViewContainerRef,enableProdMode} from '@angular/core'
+import "zone.js";
+import "reflect-metadata";
+
+import {Component, NgModule} from '@angular/core'
 import {BrowserModule} from '@angular/platform-browser';
+import {FormsModule} from '@angular/Forms';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NgLayer, NgLayerRef} from "../../ng2-layer.js";
-
-enableProdMode();
-
-export class DataShare {
-	somedata:any;
-}
+import {NgLayer, NgLayerRef, NgLayerComponent} from "../../ng2-layer";
 
 @Component({
 	selector: '.app',
 	templateUrl: 'temp/app.html',
-	providers: [NgLayer, DataShare]
+	providers: [NgLayer]
 })
 export class AppComponent {
-	constructor(private ly:NgLayer, private vcRef:ViewContainerRef, private data:DataShare) {
-		data.somedata = "水牛叔叔";
+	constructor(private ly:NgLayer) {}
+	
+	config:any = {
+		inSelector:"fallDown",
+		outSelector:"rollOut",
+		title:"angular2 layer",
+		align:"top",
+		parent: this,
+		dialogComponent:DialogComponent,
+		closeAble: false
 	}
-
-	dialog() {
-		//dynamic component class
-		@Component({templateUrl: "temp/dialog.html"})
-		class DialogComponet {
-			name:string;
-
-			constructor(private ly:NgLayerRef, private data:DataShare){}
-			
-			setTitle(){this.ly.setTitle("Angular2 Layer Title");}
-			
-			close(){this.ly.close();}
-			
-			showCloseBtn(){this.ly.showCloseBtn(true)};
-
-			showData(){alert(this.name)};
-		}
-		
-		/**
-		 * if parent is provided,
-		 * the new component will be a child of parent component
-		 */
-		let dialog = this.ly.dialog({
-			parent:this.vcRef,
-			dialogComponent:DialogComponet,
-			closeAble:false,
-			data:{name:"Angular2 Layer"}
-		});
+	
+	dialog(){
+		this.ly.dialog(this.config);
 	}
 	
 	alert(){
-		let alert = this.ly.alert({
-			message:"所有工作已经完成",
-		});
-		alert.ok(()=> {return true;});
+		this.ly.alert(this.config);
 	}
 	
 	confirm(){
-		let confirm = this.ly.confirm({
-			message:"删除后无法恢复,确定删除吗?"
-		});
-		confirm
-			.ok(()=> {return true;})
-			.cancel(()=> {return true;});
+		this.ly.confirm(this.config);
 	}
 	
 	loading(){
-		let loading = this.ly.loading({message:"loading...",isModal:true});
-		setTimeout(()=>loading.setMessage("再等一会..."), 2000);
-		setTimeout(()=>loading.close(), 4000);
+		let tip = this.ly.loading(this.config);
+		
+		setTimeout(()=>{tip.close();}, 2000)
 	}
 	
 	tip(){
-		let tip = this.ly.tip({
-			message:"saving...",
-			align:"top"
-		});
-		setTimeout(()=>{
-			tip.setMessage("successfully saved");
-		}, 1000)
+		this.ly.tip(this.config);
 	}
 }
 
+/*component for dialog*/
+@Component({
+	selector: '.dialog',
+	templateUrl: 'temp/dialog.html'
+})
+export class DialogComponent {
+	data = "angular2 layer";
+	
+	constructor(private ly:NgLayerRef, private l:NgLayer) {}
+	
+	setTitle(){this.ly.setTitle("Angular2 Layer Title");}
+	
+	close(){this.ly.close();}
+	
+	showCloseBtn(){this.ly.showCloseBtn(true)};
+	
+	showData(){alert(this.data)};
+}
+
 @NgModule({
-	imports: [BrowserModule],
-	declarations: [AppComponent],
-	bootstrap: [AppComponent],
-	providers:[DataShare]
+	imports: [BrowserModule, FormsModule],
+	entryComponents:[NgLayerComponent, DialogComponent],
+	declarations: [AppComponent, NgLayerComponent, DialogComponent],
+	bootstrap: [AppComponent]
 })
 class AppModule {}
 platformBrowserDynamic().bootstrapModule(AppModule);

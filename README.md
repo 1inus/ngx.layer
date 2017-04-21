@@ -8,6 +8,8 @@ npm install angular2-layer
 ```
 
 #Release notes
+* 2017/4/21——rewrite totally by angular 4, it is more convenient to use
+* 2017/1/14——modify LayerConfig; update angular to 4.0
 * 2017/1/14——add LayerConfig.imports and  LayerConfig.declarations
 * 2017/1/12——passing data to the component by LayerConfig.data
 
@@ -25,35 +27,35 @@ export class NgLayer {
 	 * open a dialog window
 	 * @return {NgLayerRef}
 	 */
-	dialog(config:LayerConfig):NgLayerRef
+	public dialog(config:LayerConfig):NgLayerRef
 	
 	/**
 	 * open a alert window
-	 * 
+	 *
 	 * @return {NgLayerRef}
 	 */
-	alert(config:LayerConfig):NgLayerRef
+	public alert(config:LayerConfig):NgLayerRef
 	
 	/**
 	 * open a confirm window
-	 * 
+	 *
 	 * @return {NgLayerRef}
 	 */
-	confirm(config:LayerConfig):NgLayerRef
+	public confirm(config:LayerConfig):NgLayerRef
 	
 	/**
 	 * open a message layer
-	 * 
+	 *
 	 * @return {NgLayerRef}
 	 */
-	tip(config:LayerConfig):NgLayerRef
+	public tip(config:LayerConfig):NgLayerRef
 	
 	/**
 	 * open a loading layer
-	 * 
+	 *
 	 * @return {NgLayerRef}
 	 */
-	loading(config:LayerConfig):NgLayerRef
+	public loading(config:LayerConfig):NgLayerRef
 }
 ```
 ## NgLayerRef
@@ -69,11 +71,11 @@ NgLayerRef 是对弹出层的一个引用，通过这个引用，可以对弹出
 * <code class="lang-TypeScript">ok(okCallback:()=>boolean):NgLayerRef</code>，设置弹层“确定”按钮被点击时的回调函数，对alert、confirm有效
 * <code class="lang-TypeScript">cancel(cancelCallback:()=>boolean):NgLayerRef</code>，设置弹层“取消”按钮被点击时的回调函数，对confirm有效
 ```TypeScript
-class NgLayerRef{
+export class NgLayerRef {
 	/**
 	 * destory the layer.
 	 */
-	close();
+	close()
 	
 	/**
 	 * show close button or not
@@ -82,23 +84,23 @@ class NgLayerRef{
 	
 	/**
 	 * update dialog title. for dialog only
-	 * 
+	 *
 	 * @return {NgLayerRef}
 	 */
 	setTitle(title:string):NgLayerRef
 	
 	/**
 	 * update message of layer
-	 * 
+	 *
 	 * e.g.
-	 * 
+	 *
 	 * ```typescript
 	 * let tip = this.ly.tip("保存成功", 1000, "top", "warn");
 	 * setTimeout(()=>{
 	 * 	lyRef.setMessage("successfully saved").setTipType("success");
 	 * 	lyRef.close();
 	 * }, 2000);
-	 * 
+	 *
 	 * ```
 	 * @return {NgLayerRef}
 	 */
@@ -106,9 +108,9 @@ class NgLayerRef{
 	
 	/**
 	 * if the callBack return ture, the layer will be closed
-	 * 
+	 *
 	 * e.g.
-	 * 
+	 *
 	 * ```typescript
 	 * let lyRef = this.ly.confirm("are you sure?", "yes", "no");
 	 * lyRef.setOnClose(()=>{
@@ -121,9 +123,9 @@ class NgLayerRef{
 	
 	/**
 	 * update "ok" button text, for alert layer or confirm layer
-	 * 
+	 *
 	 * e.g.
-	 * 
+	 *
 	 * ```typescript
 	 *let lyRef = this.ly.confirm("are you sure?", "yes", "no");
 	 *lyRef.setOkText("sure");
@@ -134,9 +136,9 @@ class NgLayerRef{
 	
 	/**
 	 * update "cancel" button text, for confirm layer only
-	 * 
+	 *
 	 * e.g.
-	 * 
+	 *
 	 * ```typescript
 	 *let lyRef = this.ly.confirm("are you sure?", "yes", "no");
 	 *lyRef.setCancelText("not sure");
@@ -145,11 +147,12 @@ class NgLayerRef{
 	 */
 	setCancelText(cancel:string):NgLayerRef
 	
+	
 	/**
 	 * okCallback called on 'ok' button click. for alert layer or confirm layer
-	 * 
+	 *
 	 * e.g.
-	 * 
+	 *
 	 * ```typescript
 	 *let lyRef = this.ly.confirm("are you sure?", "yes", "no");
 	 *lyRef.ok(()=>{
@@ -162,16 +165,16 @@ class NgLayerRef{
 	
 	/**
 	 * cancelCallback called on "cancel" button click. for confirm layer only
-	 * 
+	 *
 	 * e.g.
-	 * 
+	 *
 	 * ```typescript
 	 *let lyRef = this.ly.confirm("are you sure?", "yes", "no");
 	 *lyRef.ok(()=>{
 	 * 	...do something...
 	 * });
 	 * ```
-	 * 
+	 *
 	 * @return {NgLayerRef}
 	 */
 	cancel(cancelCallback:()=>boolean):NgLayerRef
@@ -179,10 +182,8 @@ class NgLayerRef{
 ```
 ## LayerConfig
 LayerConfig 是弹出层的配置类
-* <code class="lang-TypeScript">parent:ViewContainerRef</code>，dialog的父组件，如果定义了parent，dialog内部的组件将成为parent的子组件，否则成为根组件
+* <code class="lang-TypeScript">parent:any</code>，dialog的父组件，如果定义了parent，dialog内部的组件将成为parent的子组件，否则成为根组件
 * <code class="lang-TypeScript">dialogComponent:any</code>，dialog 内容部分的Component 类
-* <code class="lang-TypeScript">declarations:Array<any></code>，dialogComponent用到的指令需要额外声明
-* <code class="lang-TypeScript">imports:Array<any></code>，dialogComponent用到的指令需要额外import(如果定义在Module里)
 * <code class="lang-TypeScript">data:Object</code>，需要传递到dialogComponent内的参数可以在此声明，传递进来的数据要在Component完全初始化完毕之后才生效
 * <code class="lang-TypeScript">title:string</code>，dialog的标题
 * <code class="lang-TypeScript">closeAble:boolean</code>，dialog是否显示关闭按钮
@@ -201,224 +202,169 @@ export class LayerConfig {
 	 * new component will be a root component of application.
 	 * valid only for dialog leyer
 	 */
-	parent:ViewContainerRef;
-	
-	/**
-	 * a class for creating new component
-	 * valid only for dialog leyer
-	 */
-	dialogComponent:any;
-
-	/**
-	 * if you want to use some custom directive in your dynamic component,
-	 * don't forget to declare
-	 */
-	declarations:Array<any>;
+	parent?:any;
 	
 	/**
 	 * if you want to use some custom directive in your dynamic component,
 	 * don't forget to import
 	 */
-	imports:Array<any>;
-
+	imports?:Array<any>;
+	
 	/**
 	 * datas pass to dialog component
 	 */
-	data:Object;
+	data?:any;
 	
 	/**
 	 * dialog title
 	 * valid only for dialog leyer
 	 */
-	title:string;
+	title?:string;
 	
 	/**
 	 * show close button or not.
 	 * valid only for dialog leyer
 	 */
-	closeAble:boolean;
-
+	closeAble?:boolean;
+	
 	/**
 	 * message type of tip layer.
 	 * valid for alert, confirm, tip, loading leyer
 	 */
-	message:string;
+	message?:string;
 	
 	/**
 	 * text of "ok" button.
 	 * valid for alert or confirm leyer
 	 */
-	okText:string;
+	okText?:string;
 	
 	/**
 	 * text of "cancel" button
 	 * valid only for confirm leyer
 	 */
-	cancelText:string;
+	cancelText?:string;
 	
 	/**
 	 * position of the layer("top", "center", "bottom"), default to "top"
 	 * valid only for loading or tip leyer
 	 */
-	align:string;
+	align?:string;
 	
 	/**
 	 * modal window or not
 	 * valid only for loading leyer
 	 */
-	isModal:boolean;
-
+	isModal?:boolean;
+	
 	/**
 	 * layer will be automatic closed after duration(ms)
 	 * valid only for tip leyer
 	 */
-	tipDuration:number;
-
+	tipDuration?:number;
+	
 	/**
 	 * defined a popup animation by a class selector
 	 * valid for all type leyer.
-	 * 
+	 *
 	 * existing options:
-	 * rollIn, fallDown, fadeInDown, runIn, bounceIn, 
+	 * rollIn, fallDown, fadeInDown, runIn, bounceIn,
 	 * splatIn, dropDown, vanishIn, spaceIn, jelly, fadeInUp,
 	 */
-	inSelector:string;
+	inSelector?:string;
 	
 	/**
 	 * defined a closeing animation by a class selector
 	 * valid for all type leyer.
-	 * 
+	 *
 	 * existing options:
 	 * rollOut, fadeOutDown, bounceOut, vanishOut, spaceOut,
 	 * boingOut, fadeOutDown
 	 */
-	outSelector:string;
+	outSelector?:string;
 }
 ```
-#Usage
+#Usage & demo
+talk is cheape, show you my code
+
 ##step 1
-config systemjs.config.js
-```JavaScript
-(function(global) {
-	System.config({
-		paths: {'npm:': 'node_modules/'},
-		map: {
-			...
-			"ng2Layer":"npm:angular2-layer/ng2-layer.min.js"
-		}
-	});
-})(this);
-```
-##step 2
 import css
 ```html
-...
 <link rel="stylesheet" href="node_modules/angular2-layer/css/dialog.css" />
-...
 ```
-##step 3
+##step 2
 use it
 ```TypeScript
-···
-import {NgLayer, NgLayerRef} from "ng2Layer";
-@Component(···)
-export class AppComponent {
-	constructor(private ly:NgLayer, private vcRef:ViewContainerRef) {
-		let dialog = ly.dialog(···);
-		let alert = ly.alert(···);
-		let confirm = ly.confirm(···);
-		let loading = ly.loading(···);
-		let tip = ly.tip(···);
-	}
-}
-```
-#Demo code
-talk is cheape, show you my code
-##app.ts
-```TypeScript
-import {Component,NgModule,ViewContainerRef,enableProdMode} from '@angular/core'
+import {Component, NgModule} from '@angular/core'
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NgLayer, NgLayerRef} from "../../ng2-layer.js";
-
-enableProdMode();
-
-class DataShare {
-	somedata:any;
-}
+import {NgLayer, NgLayerRef, NgLayerComponent} from "../../ng2-layer.js";
 
 @Component({
 	selector: '.app',
 	templateUrl: 'temp/app.html',
-	providers: [NgLayer, DataShare]
+	providers: [NgLayer]
 })
 export class AppComponent {
-	constructor(private ly:NgLayer, private vcRef:ViewContainerRef, private data:DataShare) {
-		data.somedata = "水牛叔叔";
+	constructor(private ly:NgLayer) {}
+	
+	config:any = {
+		inSelector:"fallDown",
+		outSelector:"rollOut",
+		title:"angular2 layer",
+		align:"top",
+		parent: this,
+		dialogComponent:DialogComponent,
+		closeAble: false
 	}
-
-	dialog() {
-		//dynamic component class
-		@Component({templateUrl: "temp/dialog.html"})
-		class DialogComponet {
-			constructor(private ly:NgLayerRef, private data:DataShare){}
-			
-			setTitle(){this.ly.setTitle("Angular2 Layer Title");}
-			
-			close(){this.ly.close();}
-			
-			showCloseBtn(){this.ly.showCloseBtn(true)};
-		}
-		
-		/**
-		 * if parent is provided,
-		 * the new component will be a child of parent component
-		 */
-		let dialog = this.ly.dialog({
-			parent:this.vcRef,
-			dialogComponent:DialogComponet,
-			closeAble:false
-		});
+	
+	dialog(){
+		this.ly.dialog(this.config);
 	}
 	
 	alert(){
-		let alert = this.ly.alert({
-			message:"所有工作已经完成",
-		});
-		alert.ok(()=> {return true;});
+		this.ly.alert(this.config);
 	}
 	
 	confirm(){
-		let confirm = this.ly.confirm({
-			message:"删除后无法恢复,确定删除吗?"
-		});
-		confirm
-			.ok(()=> {return true;})
-			.cancel(()=> {return true;});
+		this.ly.confirm(this.config);
 	}
 	
 	loading(){
-		let loading = this.ly.loading({message:"loading...",isModal:true});
-		setTimeout(()=>loading.setMessage("再等一会..."), 2000);
-		setTimeout(()=>loading.close(), 4000);
+		let tip = this.ly.loading(this.config);
+		
+		setTimeout(()=>{tip.close();}, 2000)
 	}
 	
 	tip(){
-		let tip = this.ly.tip({
-			message:"saving...",
-			align:"top"
-		});
-		setTimeout(()=>{
-			tip.setMessage("successfully saved").setTipType("success");
-		}, 1000)
+		this.ly.tip(this.config);
 	}
+}
+
+/*component for dialog*/
+@Component({
+	selector: '.dialog',
+	templateUrl: 'temp/dialog.html'
+})
+export class DialogComponent {
+	data = "angular2 layer";
+	
+	constructor(private ly:NgLayerRef, private l:NgLayer) {}
+	
+	setTitle(){this.ly.setTitle("Angular2 Layer Title");}
+	
+	close(){this.ly.close();}
+	
+	showCloseBtn(){this.ly.showCloseBtn(true)};
+	
+	showData(){alert(this.data)};
 }
 
 @NgModule({
 	imports: [BrowserModule],
-	declarations: [AppComponent],
-	bootstrap: [AppComponent],
-	providers:[DataShare]
+	entryComponents:[NgLayerComponent, DialogComponent],
+	declarations: [AppComponent, NgLayerComponent, DialogComponent],
+	bootstrap: [AppComponent]
 })
 class AppModule {}
 platformBrowserDynamic().bootstrapModule(AppModule);
@@ -452,14 +398,15 @@ platformBrowserDynamic().bootstrapModule(AppModule);
 template of app Component
 ```html
 <button (click)="dialog();">dialog</button>
-<button (click)="alert();">alert</button>
 <button (click)="confirm();">confirm</button>
+<button (click)="alert();">alert</button>
 <button (click)="loading();">loading</button>
 <button (click)="tip();">tip</button>
 ```
 ##dialog.html
 template of dialog Component
 ```html
+<style>
 <style>
 .dialog_body{
 	width:350px;
@@ -505,8 +452,9 @@ template of dialog Component
 		<h1>Angular2  Layer</h1>
 		<p>Angular2 弹层插件，灵活，简单，丰富，优美</p>
 	</div>
-	<button (click)="setTitle();" style="margin-right:20px;">setTitle</button>
-	<button (click)="showCloseBtn();">showCloseBtn</button>
+	<button (click)="setTitle();">setTitle</button>
+	<button (click)="showCloseBtn();" style="margin:0 10px;">showCloseBtn</button>
+	<button (click)="showData();">showData</button>
 </div>
 ```
 #Live demo
