@@ -347,7 +347,6 @@ export class NgLayerComponent{
 	vcRef:ViewContainerRef;
 	layerEle:any;
 	bodyEle:any;
-	backdropStyle:any;
 	config:any = {};
 	layerType:string;
 	lyRef:NgLayerRef;
