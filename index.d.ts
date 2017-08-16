@@ -1,9 +1,60 @@
-declare module 'angular2-layer/ng2-layer' {
-	import { ApplicationRef, Compiler, ComponentFactoryResolver, ViewContainerRef } from "@angular/core";
+declare module 'angular2-layer' {
+	import { ApplicationRef, ComponentFactoryResolver, ComponentRef, ViewContainerRef } from "@angular/core";
+	import "reflect-metadata";
+	export class NgLayerRef {
+	    layer: any;
+	    close(): void;
+	    showCloseBtn(show: boolean): NgLayerRef;
+	    setTitle(title: string): NgLayerRef;
+	    setMessage(message: string): NgLayerRef;
+	    setOnClose(callBack: () => boolean): NgLayerRef;
+	    setOkText(ok: string): NgLayerRef;
+	    setCancelText(cancel: string): NgLayerRef;
+	    ok(okCallback: () => boolean): NgLayerRef;
+	    cancel(cancelCallback: () => boolean): NgLayerRef;
+	}
+	export class NgLayer {
+	    private resolver;
+	    private app;
+	    container: ViewContainerRef;
+	    constructor(resolver: ComponentFactoryResolver, app: ApplicationRef);
+	    dialog(config: LayerConfig): NgLayerRef;
+	    alert(config: LayerConfig): NgLayerRef;
+	    confirm(config: LayerConfig): NgLayerRef;
+	    tip(config: LayerConfig): NgLayerRef;
+	    loading(config: LayerConfig): NgLayerRef;
+	    private initLayerWraper(config, type);
+	    private createContainer();
+	    private default_(config);
+	}
+	export class NgLayerComponent {
+	    private resolver;
+	    thizRef: ComponentRef<any>;
+	    bodyRef: ComponentRef<any>;
+	    vcRef: ViewContainerRef;
+	    layerEle: any;
+	    bodyEle: any;
+	    config: any;
+	    layerType: string;
+	    lyRef: NgLayerRef;
+	    isDialog: boolean;
+	    isAlert: boolean;
+	    isTip: boolean;
+	    layerView: ViewContainerRef;
+	    constructor(vcRef: ViewContainerRef, lyRef: NgLayerRef, resolver: ComponentFactoryResolver);
+	    ngAfterViewInit(): void;
+	    ngOnInit(): void;
+	    onOk(): boolean;
+	    onClose(): boolean;
+	    onCancel(): boolean;
+	    ok(): void;
+	    cancel(): void;
+	    close(): void;
+	    private calCss_();
+	}
 	export class LayerConfig {
-	    parent?: ViewContainerRef;
-	    dialogComponent?: any;
-	    declarations?: Array<any>;
+	    [key: string]: any;
+	    parent?: any;
 	    imports?: Array<any>;
 	    data?: any;
 	    title?: string;
@@ -16,36 +67,6 @@ declare module 'angular2-layer/ng2-layer' {
 	    tipDuration?: number;
 	    inSelector?: string;
 	    outSelector?: string;
-	}
-	export class NgLayerRef {
-	    layerComponent: any;
-	    close(): void;
-	    showCloseBtn(show: boolean): NgLayerRef;
-	    setTitle(title: string): NgLayerRef;
-	    setMessage(message: string): NgLayerRef;
-	    setOnClose(callBack: () => boolean): NgLayerRef;
-	    setOkText(ok: string): NgLayerRef;
-	    setCancelText(cancel: string): NgLayerRef;
-	    ok(okCallback: () => boolean): NgLayerRef;
-	    cancel(cancelCallback: () => boolean): NgLayerRef;
-	}
-	export class NgLayer {
-	    private compiler;
-	    private appRef;
-	    private res;
-	    private tempCache;
-	    constructor(compiler: Compiler, appRef: ApplicationRef, res: ComponentFactoryResolver);
-	    dialog(config: LayerConfig): NgLayerRef;
-	    alert(config: LayerConfig): NgLayerRef;
-	    confirm(config: LayerConfig): NgLayerRef;
-	    tip(config: LayerConfig): NgLayerRef;
-	    loading(config: LayerConfig): NgLayerRef;
-	    private tipOrLoading_(config, isTip);
-	    private confirmOralert_(config, isConfirm);
-	    private createComponentClass_(config, temp, layerId, layerFact, isDialog);
-	    private modifySelector_<T>(clazz, contentSelector);
-	    private createComponent_(config, layerId);
-	    private default_(config);
 	}
 
 }

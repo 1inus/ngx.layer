@@ -20,9 +20,9 @@ module.exports = {
 	plugins: [
 		new webpack.BannerPlugin('created by liangwei<cnliangwei@foxmail.com>'),
 		
-		new webpack.optimize.UglifyJsPlugin({
+		/* new webpack.optimize.UglifyJsPlugin({
 			comments: false,
 			compress: {warnings: false}
-		})
+		}) */
 	]
 };

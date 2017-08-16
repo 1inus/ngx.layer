@@ -16,274 +16,41 @@ npm install angular2-layer
 # Classes
 ## NgLayer
 可以把NgLayer 看作是一个弹出层的factory。NgLayer能够生成五种类型的弹层，分别对应五个方法(参数具体含义请看代码注释):
-* <code class="lang-TypeScript">dialog(config:LayerConfig):NgLayerRef</code>，可以用自定义的ComponentClass定义对话框的内容
-* <code class="lang-TypeScript">alert(config:LayerConfig):NgLayerRef</code>，创建alert弹窗，解决原生弹窗不好看或者和网站风格不搭
-* <code class="lang-TypeScript">confirm(config:LayerConfig):NgLayerRef</code>，创建confirm弹窗,解决原生弹窗不好看或者和网站风格不搭
-* <code class="lang-TypeScript">tip(config:LayerConfig):NgLayerRef</code>，生成一个消息提示弹层
-* <code class="lang-TypeScript">loading(config:LayerConfig):NgLayerRef</code>，生成一个提示加载中（等待）的弹层
-```TypeScript
-export class NgLayer {
-	/**
-	 * open a dialog window
-	 * @return {NgLayerRef}
-	 */
-	public dialog(config:LayerConfig):NgLayerRef
-	
-	/**
-	 * open a alert window
-	 *
-	 * @return {NgLayerRef}
-	 */
-	public alert(config:LayerConfig):NgLayerRef
-	
-	/**
-	 * open a confirm window
-	 *
-	 * @return {NgLayerRef}
-	 */
-	public confirm(config:LayerConfig):NgLayerRef
-	
-	/**
-	 * open a message layer
-	 *
-	 * @return {NgLayerRef}
-	 */
-	public tip(config:LayerConfig):NgLayerRef
-	
-	/**
-	 * open a loading layer
-	 *
-	 * @return {NgLayerRef}
-	 */
-	public loading(config:LayerConfig):NgLayerRef
-}
-```
+* <code class="lang-TypeScript">dialog(config:LayerConfig):NgLayerRef</code>,open a dialog window
+* <code class="lang-TypeScript">alert(config:LayerConfig):NgLayerRef</code>,open a alert window
+* <code class="lang-TypeScript">confirm(config:LayerConfig):NgLayerRef</code>,open a confirm window
+* <code class="lang-TypeScript">tip(config:LayerConfig):NgLayerRef</code>,open a message layer
+* <code class="lang-TypeScript">loading(config:LayerConfig):NgLayerRef</code>,open a loading layer
+
 ## NgLayerRef
 NgLayerRef 是对弹出层的一个引用，通过这个引用，可以对弹出层进行操作或者指定事件的回调函数
 包含如下方法(参数具体含义请看代码注释):
-* <code class="lang-TypeScript">close():void</code>，关闭弹层，对所有类型的弹出层有效
-* <code class="lang-TypeScript">showCloseBtn(show:boolean)</code>，是否显示关闭按钮，只对dialog有效
-* <code class="lang-TypeScript">setTitle(title:string):NgLayerRef</code>，设置弹窗的标题，只适用于dialog
-* <code class="lang-TypeScript">setMessage(message:string):NgLayerRef</code>，提示消息，对除了dialog之外的弹层有效
-* <code class="lang-TypeScript">setOkText(ok:string):NgLayerRef</code>，更改“确定”按钮的文本，对alert、confirm有效
-* <code class="lang-TypeScript">setCancelText(cancel:string):NgLayerRef</code>，更改“取消”按钮的文本，对confirm有效
-* <code class="lang-TypeScript">setOnClose(callBack:()=>boolean):NgLayerRef</code>，设置弹层被关闭时候的回调函数，所有类型的弹层有效
-* <code class="lang-TypeScript">ok(okCallback:()=>boolean):NgLayerRef</code>，设置弹层“确定”按钮被点击时的回调函数，对alert、confirm有效
-* <code class="lang-TypeScript">cancel(cancelCallback:()=>boolean):NgLayerRef</code>，设置弹层“取消”按钮被点击时的回调函数，对confirm有效
-```TypeScript
-export class NgLayerRef {
-	/**
-	 * destory the layer.
-	 */
-	close()
-	
-	/**
-	 * show close button or not
-	 */
-	showCloseBtn(show:boolean):NgLayerRef
-	
-	/**
-	 * update dialog title. for dialog only
-	 *
-	 * @return {NgLayerRef}
-	 */
-	setTitle(title:string):NgLayerRef
-	
-	/**
-	 * update message of layer
-	 *
-	 * e.g.
-	 *
-	 * ```typescript
-	 * let tip = this.ly.tip("保存成功", 1000, "top", "warn");
-	 * setTimeout(()=>{
-	 * 	lyRef.setMessage("successfully saved").setTipType("success");
-	 * 	lyRef.close();
-	 * }, 2000);
-	 *
-	 * ```
-	 * @return {NgLayerRef}
-	 */
-	setMessage(message:string):NgLayerRef
-	
-	/**
-	 * if the callBack return ture, the layer will be closed
-	 *
-	 * e.g.
-	 *
-	 * ```typescript
-	 * let lyRef = this.ly.confirm("are you sure?", "yes", "no");
-	 * lyRef.setOnClose(()=>{
-	 * 	if(...) return true;
-	 * });
-	 * ```
-	 * @return {NgLayerRef}
-	 */
-	setOnClose(callBack:()=>boolean):NgLayerRef
-	
-	/**
-	 * update "ok" button text, for alert layer or confirm layer
-	 *
-	 * e.g.
-	 *
-	 * ```typescript
-	 *let lyRef = this.ly.confirm("are you sure?", "yes", "no");
-	 *lyRef.setOkText("sure");
-	 * ```
-	 * @return {NgLayerRef}
-	 */
-	setOkText(ok:string):NgLayerRef
-	
-	/**
-	 * update "cancel" button text, for confirm layer only
-	 *
-	 * e.g.
-	 *
-	 * ```typescript
-	 *let lyRef = this.ly.confirm("are you sure?", "yes", "no");
-	 *lyRef.setCancelText("not sure");
-	 * ```
-	 * @return {NgLayerRef}
-	 */
-	setCancelText(cancel:string):NgLayerRef
-	
-	
-	/**
-	 * okCallback called on 'ok' button click. for alert layer or confirm layer
-	 *
-	 * e.g.
-	 *
-	 * ```typescript
-	 *let lyRef = this.ly.confirm("are you sure?", "yes", "no");
-	 *lyRef.ok(()=>{
-	 * 	...do something...
-	 * });
-	 * ```
-	 * @return {NgLayerRef}
-	 */
-	ok(okCallback:()=>boolean):NgLayerRef
-	
-	/**
-	 * cancelCallback called on "cancel" button click. for confirm layer only
-	 *
-	 * e.g.
-	 *
-	 * ```typescript
-	 *let lyRef = this.ly.confirm("are you sure?", "yes", "no");
-	 *lyRef.ok(()=>{
-	 * 	...do something...
-	 * });
-	 * ```
-	 *
-	 * @return {NgLayerRef}
-	 */
-	cancel(cancelCallback:()=>boolean):NgLayerRef
-}
-```
+* <code class="lang-TypeScript">close():void</code>，destory the layer
+* <code class="lang-TypeScript">showCloseBtn(show:boolean)</code>，show close button or not
+* <code class="lang-TypeScript">setTitle(title:string):NgLayerRef</code>，update dialog title. for dialog only
+* <code class="lang-TypeScript">setMessage(message:string):NgLayerRef</code>，update message of layer
+* <code class="lang-TypeScript">setOkText(ok:string):NgLayerRef</code>，update "ok" button text, for alert layer or confirm layer
+* <code class="lang-TypeScript">setCancelText(cancel:string):NgLayerRef</code>，update "cancel" button text, for confirm layer only
+* <code class="lang-TypeScript">setOnClose(callBack:()=>boolean):NgLayerRef</code>，if the callBack return ture, the layer will be closed
+* <code class="lang-TypeScript">ok(okCallback:()=>boolean):NgLayerRef</code>，okCallback called on 'ok' button click. for alert layer or confirm layer
+* <code class="lang-TypeScript">cancel(cancelCallback:()=>boolean):NgLayerRef</code>，cancelCallback called on "cancel" button click. for confirm layer only
+
 ## LayerConfig
 LayerConfig 是弹出层的配置类
-* <code class="lang-TypeScript">parent:any</code>，dialog的父组件，如果定义了parent，dialog内部的组件将成为parent的子组件，否则成为根组件
-* <code class="lang-TypeScript">dialogComponent:any</code>，dialog 内容部分的Component 类
-* <code class="lang-TypeScript">data:Object</code>，需要传递到dialogComponent内的参数可以在此声明，传递进来的数据要在Component完全初始化完毕之后才生效
-* <code class="lang-TypeScript">title:string</code>，dialog的标题
-* <code class="lang-TypeScript">closeAble:boolean</code>，dialog是否显示关闭按钮
-* <code class="lang-TypeScript">message:string</code>，tip,loading,alert,confirm弹层的提示文字
-* <code class="lang-TypeScript">okText:string</code>，确定按钮的文本
-* <code class="lang-TypeScript">cancelText:string</code>，取消按钮的文本
-* <code class="lang-TypeScript">align:string</code>，定义 loding和tip弹层的位置，可选值有：top, center, bottom
-* <code class="lang-TypeScript">isModal:boolean</code>，是否模态，只适用于loading 弹层
-* <code class="lang-TypeScript">tipDuration:number</code>，tip 弹层的持续时间， 经过指定的时间之后，弹层会自动关闭，单位：毫秒(ms)
-* <code class="lang-TypeScript">inSelector:string</code>，配置弹层弹出时候的转场效果，实际上是为弹层指定一个class选择器，默认提供可选的值有：rollIn, fallDown, fadeInDown, runIn, bounceIn, splatIn, dropDown, vanishIn, spaceIn, jelly, fadeInUp,
-* <code class="lang-TypeScript">outSelector:string</code>，配置弹层关闭时候的转场效果，实际上是为弹层指定一个class选择器，以便运用动画。默认提供可选的值有：rollOut, fadeOutDown, bounceOut, vanishOut, spaceOut, boingOut, fadeOutDown
-```TypeScript
-export class LayerConfig {
-	/**
-	 * the new component will be a child of parent, if parent is null,
-	 * new component will be a root component of application.
-	 * valid only for dialog leyer
-	 */
-	parent?:any;
-	
-	/**
-	 * if you want to use some custom directive in your dynamic component,
-	 * don't forget to import
-	 */
-	imports?:Array<any>;
-	
-	/**
-	 * datas pass to dialog component
-	 */
-	data?:any;
-	
-	/**
-	 * dialog title
-	 * valid only for dialog leyer
-	 */
-	title?:string;
-	
-	/**
-	 * show close button or not.
-	 * valid only for dialog leyer
-	 */
-	closeAble?:boolean;
-	
-	/**
-	 * message type of tip layer.
-	 * valid for alert, confirm, tip, loading leyer
-	 */
-	message?:string;
-	
-	/**
-	 * text of "ok" button.
-	 * valid for alert or confirm leyer
-	 */
-	okText?:string;
-	
-	/**
-	 * text of "cancel" button
-	 * valid only for confirm leyer
-	 */
-	cancelText?:string;
-	
-	/**
-	 * position of the layer("top", "center", "bottom"), default to "top"
-	 * valid only for loading or tip leyer
-	 */
-	align?:string;
-	
-	/**
-	 * modal window or not
-	 * valid only for loading leyer
-	 */
-	isModal?:boolean;
-	
-	/**
-	 * layer will be automatic closed after duration(ms)
-	 * valid only for tip leyer
-	 */
-	tipDuration?:number;
-	
-	/**
-	 * defined a popup animation by a class selector
-	 * valid for all type leyer.
-	 *
-	 * existing options:
-	 * rollIn, fallDown, fadeInDown, runIn, bounceIn,
-	 * splatIn, dropDown, vanishIn, spaceIn, jelly, fadeInUp,
-	 */
-	inSelector?:string;
-	
-	/**
-	 * defined a closeing animation by a class selector
-	 * valid for all type leyer.
-	 *
-	 * existing options:
-	 * rollOut, fadeOutDown, bounceOut, vanishOut, spaceOut,
-	 * boingOut, fadeOutDown
-	 */
-	outSelector?:string;
-}
-```
+* <code class="lang-TypeScript">parent:any</code>，the new component will be a child of parent, if parent is null, new component will be a root component of application. valid only for dialog leyer
+* <code class="lang-TypeScript">dialogComponent:any</code>，dialog dialog body Component
+* <code class="lang-TypeScript">data:Object</code>，datas pass to dialog component
+* <code class="lang-TypeScript">title:string</code>，dialog title valid only for dialog leyer
+* <code class="lang-TypeScript">closeAble:boolean</code>，show close button or not. valid only for dialog leyer
+* <code class="lang-TypeScript">message:string</code>，message type of tip layer. valid for alert, confirm, tip, loading leyer
+* <code class="lang-TypeScript">okText:string</code>，text of "ok" button. valid for alert or confirm leyer
+* <code class="lang-TypeScript">cancelText:string</code>，text of "cancel" button.valid only for confirm leyer
+* <code class="lang-TypeScript">align:string</code>，position of the layer("top", "center", "bottom"), default to "top" valid only for loading or tip leyer
+* <code class="lang-TypeScript">isModal:boolean</code>，modal window or not valid only for loading leyer
+* <code class="lang-TypeScript">tipDuration:number</code>，layer will be automatic closed after duration(ms) valid only for tip leyer
+* <code class="lang-TypeScript">inSelector:string</code>，defined a popup animation by a class selector valid for all type leyer. existing options: rollIn, fallDown, fadeInDown, runIn, bounceIn, platIn, dropDown, vanishIn, spaceIn, jelly, fadeInUp
+* <code class="lang-TypeScript">outSelector:string</code>，defined a closeing animation by a class selector valid for all type leyer. existing options: rollOut, fadeOutDown, bounceOut, vanishOut, spaceOut, boingOut, fadeOutDown
+
 #Usage & demo
 talk is cheape, show you my code
 
@@ -298,7 +65,7 @@ use it
 import {Component, NgModule} from '@angular/core'
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NgLayer, NgLayerRef, NgLayerComponent} from "../../ng2-layer.js";
+import {NgLayer, NgLayerRef, NgLayerComponent} from "angular2-layer";
 
 @Component({
 	selector: '.app',

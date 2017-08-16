@@ -292,12 +292,12 @@ export class NgLayer {
 			inSelector:"dropDown",
 			parent:null,
 			dialogComponent:null,
-			isModal:false,
+			isModal:true,
 			tipDuration:2500,
 			message:"angular2 layer"
 		};
 		let keys = Object.keys(dfs), key:string;
-		
+
 		for(let i in keys){
 			key = keys[i];
 			if(config[key]==undefined){
@@ -315,29 +315,33 @@ export class NgLayer {
  */
 @Component({
 	selector: '.iconing_layer_backdrop',
+	host:{
+		'[class.iconing_tip_backdrop]':'isTip',
+		'[class.iconing_layer_backdrop]':'!isTip',
+		'[class.iconing_backdrop_align_top]':"isTip && !config.isModal && config.align=='top'",
+		'[class.iconing_backdrop_align_center]':"isTip && !config.isModal && config.align=='center'",
+		'[class.iconing_backdrop_align_bottom]':"isTip && !config.isModal && config.align=='bottom'",
+		'[class.iconing_loading_modal]':"isTip && config.isModal",
+		'[class.iconing_dialog_modal]':"!isTip && config.isModal"
+	},
 	template:
-			'<div *ngIf="!isTip" class="iconing_layer_body layer_{{layerType}}">'+
-				'<div class="iconing_layer_header">'+
-					'<div class="iconing_layer_title">{{config.title}}</div>'+
-					'<button (click)="close();" class="iconing_layer_close_btn {{config.closeAble?\'iconing_layer_close_able\':\'\'}}">X</button>'+
-				'</div>'+
-				'<div class="iconing_layer_content" >'+
-					/*alert or confirm*/
-					'<div *ngIf="isAlert" class="iconing_alert_body">'+
-						'<div class="iconing_content">{{config.message}}</div>'+
-						'<div class="iconing_alert_btn">'+
-							'<button *ngIf="layerType==\'confirm\'" class="iconing_btn_cancel" (click)="cancel()">{{config.cancelText}}</button>'+
-							'<button class="iconing_btn_ok" (click)="ok()">{{config.okText}}</button>'+
-						'</div>'+
-					'</div>' +
-		
-					/*dialog*/
-					'<div #iconing_layer_content style="display:none;"></div>'+
-				'</div>'+
-			'</div>'+
-		
-			/*tip or loading*/
-			'<div *ngIf="isTip" class="iconing_tip_body iconing_type_{{layerType}}">{{config.message}}</div>',
+`<div *ngIf="!isTip" class="iconing_layer_body layer_{{layerType}} {{config.isModal?'iconing_layer_modal':''}}">
+	<div class="iconing_layer_header" #layerHeader>
+		<div class="iconing_layer_title">{{config.title}}</div>
+		<button (click)="close();" class="iconing_layer_close_btn {{config.closeAble?'iconing_layer_close_able':''}}">X</button>
+	</div>
+	<div class="iconing_layer_content" >
+		<div *ngIf="isAlert" class="iconing_alert_body">
+			<div class="iconing_content">{{config.message}}</div>
+			<div class="iconing_alert_btn">
+				<button *ngIf="layerType=='confirm'" class="iconing_btn_cancel" (click)="cancel()">{{config.cancelText}}</button>
+				<button class="iconing_btn_ok" (click)="ok()">{{config.okText}}</button>
+			</div>
+		</div>
+		<div #iconing_layer_content style="display:none;"></div>
+	</div>
+</div>
+<div *ngIf="isTip" class="iconing_tip_body iconing_type_{{layerType}} iconing_body_align_{{config.align}} {{config.isModal?'iconing_layer_modal':''}}">{{config.message}}</div>`,
 	
 	providers:[NgLayerRef]
 })
@@ -357,6 +361,9 @@ export class NgLayerComponent{
 	
 	@ViewChild('iconing_layer_content', {read: ViewContainerRef})
 	layerView:ViewContainerRef;
+
+	@ViewChild('layerHeader', {read: ViewContainerRef})
+	layerHeader:ViewContainerRef;
 	
 	/**
 	 *
@@ -365,6 +372,19 @@ export class NgLayerComponent{
 		this.lyRef = lyRef;
 		this.lyRef.layer = this;
 		this.vcRef = vcRef;
+	}
+
+	/**
+	 * init content Component
+	 */
+	ngOnInit() {
+		if(this.layerType=="dialog"){
+			this.isDialog=true;
+		} else if(this.layerType=="alert" || this.layerType=="confirm"){
+			this.isAlert=true;
+		} else {
+			this.isTip = true;
+		}
 	}
 	
 	/**
@@ -375,41 +395,9 @@ export class NgLayerComponent{
 		this.bodyEle = this.layerEle.querySelector(".iconing_layer_body,.iconing_tip_body");
 		
 		let classList = this.bodyEle.classList;
-		
-		if(this.isTip){
-			classList.add("iconing_body_align_"+this.config.align);
-			
-			let bdCls = this.layerEle.classList;
-			bdCls.add("iconing_tip_backdrop");
-			bdCls.remove("iconing_layer_backdrop");
-			
-			if(this.config.isModal){
-				bdCls.add("iconing_loading_modal");
-			} else {
-				bdCls.add("iconing_backdrop_align_"+this.config.align)
-			}
-			
-		}
-		classList.add("iconing_layer_backdrop_"+this.layerType);
-		
-		if(this.config.inSelector){
-			classList.add(this.config.inSelector);
-		}
-		
-		if(this.config.isModal){
-			classList.add("iconing_layer_modal");
-		}
-		
+	
 		this.layerEle.style.background = "rgba(95, 95, 95, 0.5)";
 		this.layerEle.transition = "background "+this.calCss_()+"ms";
-		
-		
-		//auto close tip
-		if(this.layerType=="tip"){
-			setTimeout(()=>{
-				this.close();
-			}, this.config.tipDuration+this.calCss_());
-		}
 		
 		/*初始化弹窗组件*/
 		if(this.layerType=="dialog"){
@@ -425,18 +413,52 @@ export class NgLayerComponent{
 				Object.assign(this.bodyRef.instance, this.config.data);
 			}
 		}
-	}
-	
-	/**
-	 * init content Component
-	 */
-	ngOnInit() {
-		if(this.layerType=="dialog"){
-			this.isDialog=true;
-		} else if(this.layerType=="alert" || this.layerType=="confirm"){
-			this.isAlert=true;
-		} else {
-			this.isTip = true;
+		
+		//auto close tip
+		if(this.layerType=="tip"){
+			setTimeout(()=>{
+				this.close();
+			}, this.config.tipDuration);
+		} else if(!this.config.isModal && this.layerHeader) {
+			/* 非模态窗口可拖动 */
+			let header = this.layerHeader.element.nativeElement;
+			let layer = this.vcRef.element.nativeElement;
+
+			let startx:any, starty:any;
+			let startPosition:any;
+			let style = layer.style;
+			let doc = document.body;
+			let hasMoved = false;
+
+			header.onmousedown = (e:any) => {
+				e.preventDefault();
+				doc.onmousemove = (e:any) => {
+					style['transform'] = `translate3d(${startPosition.left + e.clientX - startx}px, ${startPosition.top + e.clientY - starty}px, 0)`;
+				};
+				doc.onmouseup = () => {
+					doc.onmousemove = null;
+					doc.onmouseup = null;
+				};
+				startx = e.clientX;
+				starty = e.clientY;
+				startPosition = layer.getBoundingClientRect();
+				
+				if(!hasMoved){
+					layer.classList.add("iconing_backdrop_moved");
+				}
+
+				style['transform'] = `translate3d(${startPosition.left}px, ${startPosition.top}px, 0)`;
+				hasMoved = true;
+			}
+		}
+
+		if(this.config.inSelector){
+			classList.add(this.config.inSelector);
+			let aniEnd = (e:any)=>{
+				classList.remove(this.config.inSelector);
+				this.bodyEle.removeEventListener("animationend", aniEnd);
+			};
+			this.bodyEle.addEventListener("animationend", aniEnd);
 		}
 	}
 	
@@ -470,14 +492,14 @@ export class NgLayerComponent{
 	close(){
 		if(!this.onClose || this.onClose()) {
 			if(this.config.outSelector){
-				let classList = this.bodyEle.classList;
-				classList.remove(this.config.inSelector);
-				classList.add(this.config.outSelector);
-				
+				this.bodyEle.classList.add(this.config.outSelector);
 				/**
 				 * set a delay for layer closeing so the animation has time to play
 				 */
-				setTimeout(()=>{this.thizRef.destroy();}, this.calCss_());
+				let aniEnd = (e:any)=>{
+					this.thizRef.destroy();
+				};
+				this.bodyEle.addEventListener("animationend", aniEnd);
 			} else {
 				this.thizRef.destroy();
 			}
@@ -500,7 +522,7 @@ export class NgLayerComponent{
 			n2 = unit=="ms"?n2:unit=="s"?n2*1000:0;
 		}
 		
-		return Math.max(n1,n2)-5;
+		return Math.max(n1,n2)-8;
 	}
 }
 

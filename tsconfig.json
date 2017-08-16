@@ -1,21 +1,24 @@
 {
-  "files": [
-	"ng2-layer.ts"
-  ],
-  "compileOnSave": true,
-  "compilerOptions": {
-	"module": "commonjs",
-	"moduleResolution": "node",
-	"noImplicitAny": true,
-	"removeComments": true,
-	"target": "es5",
-	"sourceMap": false,
-	"emitDecoratorMetadata": true,
-	"experimentalDecorators": true,
-	"lib": ["es2017", "dom"]
-  },
-  "exclude": [
-	"node_modules"
-  ]
+	"files": [
+		"angular2-layer.ts"
+	],
+	"compileOnSave": true,
+	"compilerOptions": {
+		"watch": true,
+		"target": "es5",
+		"declaration":true,
+		"module": "commonjs",
+		"noImplicitAny": true,
+		"removeComments": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"lib": [
+			"es2017",
+			"dom"
+		]
+	},
+	"exclude": [
+		"node_modules"
+	]
 }
-//dts-generator --name angular2-layer --project ./ --out index.d.ts
+//dts-generator --project ./ --out index.d.ts
