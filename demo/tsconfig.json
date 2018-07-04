@@ -1,21 +1,24 @@
 {
-  "files": [
-	"app/main.ts"
-  ],
-  "compileOnSave": true,
-  "compilerOptions": {
-	"module": "commonjs",
-	"moduleResolution": "node",
-	"noImplicitAny": true,
-	"removeComments": true,
-	"target": "es5",
-	"sourceMap": false,
-	"emitDecoratorMetadata": true,
-	"experimentalDecorators": true,
-	"allowJs": true,
-	"lib": ["es2017", "dom"]
-  },
-  "exclude": [
-	"node_modules"
-  ]
+	"files": [
+		"app/main.ts"
+	],
+	"compileOnSave": true,
+	"compilerOptions": {
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"noImplicitAny": true,
+		"removeComments": true,
+		"target": "es5",
+		"sourceMap": false,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"allowJs": true,
+		"lib": [
+			"es2017",
+			"dom"
+		]
+	},
+	"exclude": [
+		"node_modules"
+	]
 }

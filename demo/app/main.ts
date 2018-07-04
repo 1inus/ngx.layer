@@ -1,11 +1,9 @@
 import "zone.js";
-import "reflect-metadata";
-
 import {Component, NgModule, ViewEncapsulation} from '@angular/core'
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/Forms';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NgLayer, NgLayerRef, NgLayerComponent} from "../../angular2-layer";
+import {NgxLayer, NgxLayerRef, NgxLayerComponent} from "../../ngx.layer";
 
 @Component({
 	selector: '.app',
@@ -73,10 +71,10 @@ import {NgLayer, NgLayerRef, NgLayerComponent} from "../../angular2-layer";
 	</tr>
 </table>
 	`,
-	providers: [NgLayer]
+	providers: [NgxLayer]
 })
 export class AppComponent {
-	constructor(private ly:NgLayer) {}
+	constructor(private ly:NgxLayer) {}
 	
 	config:any = {
 		inSelector:"fallDown",
@@ -119,7 +117,7 @@ export class AppComponent {
 <div class="dialog_body">
 	<div class="dialog_logo">
 		<img src="image/logo.png"/>
-		<h1>Angular2  Layer</h1>
+		<h1>Ngx  Layer</h1>
 		<p>Angular2 弹层插件，灵活，简单，丰富，优美</p>
 	</div>
 	<button (click)="setTitle();">setTitle</button>
@@ -130,9 +128,9 @@ export class AppComponent {
 export class DialogComponent {
 	data = "angular2 layer";
 	
-	constructor(private ly:NgLayerRef, private l:NgLayer) {}
+	constructor(private ly:NgxLayerRef, private l:NgxLayer) {}
 	
-	setTitle(){this.ly.setTitle("Angular2 Layer Title");}
+	setTitle(){this.ly.setTitle("Ngx Layer Title");}
 	
 	close(){this.ly.close();}
 	
@@ -143,8 +141,8 @@ export class DialogComponent {
 
 @NgModule({
 	imports: [BrowserModule, FormsModule],
-	entryComponents:[NgLayerComponent, DialogComponent],
-	declarations: [AppComponent, NgLayerComponent, DialogComponent],
+	entryComponents:[NgxLayerComponent, DialogComponent],
+	declarations: [AppComponent, NgxLayerComponent, DialogComponent],
 	bootstrap: [AppComponent]
 })
 class AppModule {}

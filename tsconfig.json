@@ -1,6 +1,6 @@
 {
 	"files": [
-		"angular2-layer.ts"
+		"ngx.layer.ts"
 	],
 	"compileOnSave": true,
 	"compilerOptions": {

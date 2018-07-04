@@ -1,39 +1,41 @@
-[document](http://ng2-layer.wemakers.net/doc.html)
-
-[live demo](http://ng2-layer.wemakers.net/demo.html)
+[document](https://1inus.github.io/ngx.layer.site/doc.html)
+[live demo](https://1inus.github.io/ngx.layer.site/demo.html)
 
 #NPM
 ```
-npm install angular2-layer
+npm install ngx.superlayer
 ```
 
 #Release notes
+* 2018/7/4——
+	* rename from "angular2-layer" to "ngx.superlayer"
+	* upgrade to support angular 6
 * 2017/4/21——rewrite totally by angular 4, it is more convenient to use
 * 2017/1/14——modify LayerConfig; update angular to 4.0
 * 2017/1/14——add LayerConfig.imports and  LayerConfig.declarations
 * 2017/1/12——passing data to the component by LayerConfig.data
 
 # Classes
-## NgLayer
+## NgxLayer
 可以把NgLayer 看作是一个弹出层的factory。NgLayer能够生成五种类型的弹层，分别对应五个方法(参数具体含义请看代码注释):
-* <code class="lang-TypeScript">dialog(config:LayerConfig):NgLayerRef</code>,open a dialog window
-* <code class="lang-TypeScript">alert(config:LayerConfig):NgLayerRef</code>,open a alert window
-* <code class="lang-TypeScript">confirm(config:LayerConfig):NgLayerRef</code>,open a confirm window
-* <code class="lang-TypeScript">tip(config:LayerConfig):NgLayerRef</code>,open a message layer
-* <code class="lang-TypeScript">loading(config:LayerConfig):NgLayerRef</code>,open a loading layer
+* <code class="lang-TypeScript">dialog(config:LayerConfig):NgxLayerRef</code>,open a dialog window
+* <code class="lang-TypeScript">alert(config:LayerConfig):NgxLayerRef</code>,open a alert window
+* <code class="lang-TypeScript">confirm(config:LayerConfig):NgxLayerRef</code>,open a confirm window
+* <code class="lang-TypeScript">tip(config:LayerConfig):NgxLayerRef</code>,open a message layer
+* <code class="lang-TypeScript">loading(config:LayerConfig):NgxLayerRef</code>,open a loading layer
 
-## NgLayerRef
-NgLayerRef 是对弹出层的一个引用，通过这个引用，可以对弹出层进行操作或者指定事件的回调函数
+## NgxLayerRef
+NgxLayerRef 是对弹出层的一个引用，通过这个引用，可以对弹出层进行操作或者指定事件的回调函数
 包含如下方法(参数具体含义请看代码注释):
 * <code class="lang-TypeScript">close():void</code>，destory the layer
 * <code class="lang-TypeScript">showCloseBtn(show:boolean)</code>，show close button or not
-* <code class="lang-TypeScript">setTitle(title:string):NgLayerRef</code>，update dialog title. for dialog only
-* <code class="lang-TypeScript">setMessage(message:string):NgLayerRef</code>，update message of layer
-* <code class="lang-TypeScript">setOkText(ok:string):NgLayerRef</code>，update "ok" button text, for alert layer or confirm layer
-* <code class="lang-TypeScript">setCancelText(cancel:string):NgLayerRef</code>，update "cancel" button text, for confirm layer only
-* <code class="lang-TypeScript">setOnClose(callBack:()=>boolean):NgLayerRef</code>，if the callBack return ture, the layer will be closed
-* <code class="lang-TypeScript">ok(okCallback:()=>boolean):NgLayerRef</code>，okCallback called on 'ok' button click. for alert layer or confirm layer
-* <code class="lang-TypeScript">cancel(cancelCallback:()=>boolean):NgLayerRef</code>，cancelCallback called on "cancel" button click. for confirm layer only
+* <code class="lang-TypeScript">setTitle(title:string):NgxLayerRef</code>，update dialog title. for dialog only
+* <code class="lang-TypeScript">setMessage(message:string):NgxLayerRef</code>，update message of layer
+* <code class="lang-TypeScript">setOkText(ok:string):NgxLayerRef</code>，update "ok" button text, for alert layer or confirm layer
+* <code class="lang-TypeScript">setCancelText(cancel:string):NgxLayerRef</code>，update "cancel" button text, for confirm layer only
+* <code class="lang-TypeScript">setOnClose(callBack:()=>boolean):NgxLayerRef</code>，if the callBack return ture, the layer will be closed
+* <code class="lang-TypeScript">ok(okCallback:()=>boolean):NgxLayerRef</code>，okCallback called on 'ok' button click. for alert layer or confirm layer
+* <code class="lang-TypeScript">cancel(cancelCallback:()=>boolean):NgxLayerRef</code>，cancelCallback called on "cancel" button click. for confirm layer only
 
 ## LayerConfig
 LayerConfig 是弹出层的配置类
@@ -57,7 +59,7 @@ talk is cheape, show you my code
 ##step 1
 import css
 ```html
-<link rel="stylesheet" href="node_modules/angular2-layer/css/dialog.css" />
+<link rel="stylesheet" href="node_modules/ngx.superlayer/css/dialog.css" />
 ```
 ##step 2
 use it
@@ -65,15 +67,15 @@ use it
 import {Component, NgModule} from '@angular/core'
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NgLayer, NgLayerRef, NgLayerComponent} from "angular2-layer";
+import {NgxLayer, NgxLayerRef, NgxLayerComponent} from "ngx.superlayer";
 
 @Component({
 	selector: '.app',
 	templateUrl: 'temp/app.html',
-	providers: [NgLayer]
+	providers: [NgxLayer]
 })
 export class AppComponent {
-	constructor(private ly:NgLayer) {}
+	constructor(private ly:NgxLayer) {}
 	
 	config:any = {
 		inSelector:"fallDown",
@@ -116,9 +118,9 @@ export class AppComponent {
 export class DialogComponent {
 	data = "angular2 layer";
 	
-	constructor(private ly:NgLayerRef, private l:NgLayer) {}
+	constructor(private ly:NgxLayerRef, private l:NgxLayer) {}
 	
-	setTitle(){this.ly.setTitle("Angular2 Layer Title");}
+	setTitle(){this.ly.setTitle("Ngx Layer Title");}
 	
 	close(){this.ly.close();}
 	
@@ -129,8 +131,8 @@ export class DialogComponent {
 
 @NgModule({
 	imports: [BrowserModule],
-	entryComponents:[NgLayerComponent, DialogComponent],
-	declarations: [AppComponent, NgLayerComponent, DialogComponent],
+	entryComponents:[NgxLayerComponent, DialogComponent],
+	declarations: [AppComponent, NgxLayerComponent, DialogComponent],
 	bootstrap: [AppComponent]
 })
 class AppModule {}
@@ -216,7 +218,7 @@ template of dialog Component
 <div class="dialog_body">
 	<div class="dialog_logo">
 		<img src="image/logo.png"/>
-		<h1>Angular2  Layer</h1>
+		<h1>Ngx Layer</h1>
 		<p>Angular2 弹层插件，灵活，简单，丰富，优美</p>
 	</div>
 	<button (click)="setTitle();">setTitle</button>

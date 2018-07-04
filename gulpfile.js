@@ -4,19 +4,12 @@ var less = require('gulp-less');
 
 var tsProject = ts.createProject("tsconfig.json");
 
-var demoProject = ts.createProject("demo/tsconfig.json");
-
 gulp.task("ts", function () {
 	return tsProject.src()
 		.pipe(tsProject())
 		.js.pipe(gulp.dest(""));
 });
-
-gulp.task('watchTs', function() {
-	gulp.watch('angular2-layer.ts', function(){
-		gulp.run('ts');
-	});
-});
+gulp.watch('ngx.layer.ts', ['ts']);
 
 gulp.task('less', function() {
 	return gulp.src('css/*.less') // only compile the entry file
@@ -26,27 +19,18 @@ gulp.task('less', function() {
 		})
 		.pipe(gulp.dest('./css'))
 });
-
-gulp.task('watchLess', function() {
-	gulp.watch('css/*.less', function(){
-		gulp.run('less');
-	});
-});
+gulp.watch('css/*.less', ['less']);
 
 
 /**
  * demo file
  */
+var demoProject = ts.createProject("demo/tsconfig.json");
 gulp.task('demo', function () {
 	return demoProject.src()
 		.pipe(demoProject())
 		.js.pipe(gulp.dest("demo/app"));
 });
+gulp.watch('demo/app/**/*.ts', ["demo"]);
 
-gulp.task('watchDemo', function() {
-	gulp.watch('demo/app/**/*.ts', function(){
-		gulp.run('demo');
-	});
-});
-
-gulp.task('default', ['ts', 'watchTs', 'watchDemo', 'less', 'watchLess']);
+gulp.task('default', ['ts', 'less', 'demo']);
